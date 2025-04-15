@@ -10,7 +10,7 @@ namespace Suntail
         [Tooltip("Layer mask for interactive objects")]
         [SerializeField] private LayerMask interactionLayer;
         [Tooltip("Maximum distance from player to object of interaction")]
-        [SerializeField] private float interactionDistance = 3f;
+        [SerializeField] private float interactionDistance = 6f;
         [Tooltip("Tag for door object")]
         [SerializeField] private string doorTag = "Door";
         [Tooltip("Tag for pickable object")]
@@ -72,10 +72,10 @@ namespace Suntail
         //Determine which object we are now looking at, depending on the tag and component
         private void Interactions()
         {
-            _raycastPosition = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            Ray ray = new Ray(transform.position + Vector3.up * 1.2f, transform.forward);
+            Debug.DrawRay(ray.origin, ray.direction * interactionDistance, Color.red);
             RaycastHit interactionHit;
-            if (Physics.Raycast(_raycastPosition, mainCamera.transform.forward, 
-                out interactionHit, interactionDistance, interactionLayer))
+            if (Physics.Raycast(ray, out interactionHit, interactionDistance, interactionLayer))
             {
                 if (interactionHit.collider.CompareTag(itemTag))
                 {

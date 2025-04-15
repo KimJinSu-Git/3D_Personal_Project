@@ -1,13 +1,32 @@
+using System;
 using System.Collections.Generic;
+using suntail;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-/*Simple player movement controller, based on character controller component, 
-with footstep system based on check the current texture of the component*/
 namespace Suntail
 {
+    public enum PlayerState
+    {
+        Idle,
+        Walk,
+        Run,
+        Jump,
+        Attack1,
+        Attack2,
+        Attack3,
+        Attack4,
+        Attack5,
+        ShieldWait,
+        ShieldWalk,
+        ShieldRun,
+        ShieldAttack1,
+        ShieldAttack2,
+        ShieldAttack3
+    }
+
     public class PlayerController : MonoBehaviour
     {
-        //Variables for footstep system list
         [System.Serializable]
         public class GroundLayer
         {
@@ -15,22 +34,19 @@ namespace Suntail
             public Texture2D[] groundTextures;
             public AudioClip[] footstepSounds;
         }
-        
-        [Header("Movement")]
 
+        [Header("Movement")]
         [Tooltip("Basic controller speed")]
         [SerializeField] private float walkSpeed;
-        
-        [Tooltip("Running controller speed")]
+        [Tooltip("Running controller speed multiplier")]
         [SerializeField] private float runMultiplier;
-
-        [Tooltip("Force of the jump with which the controller rushes upwards")]
+        [Tooltip("Force of the jump")]
         [SerializeField] private float jumpForce;
-
-        [Tooltip("Gravity, pushing down controller when it jumping")]
+        [Tooltip("Gravity")]
         [SerializeField] private float gravity = -9.81f;
 
-        [Header("Mouse Look")] 
+
+        [Header("Mouse Look")]
         [SerializeField] private Camera playerCamera;
         [SerializeField] private float mouseSensivity;
         [SerializeField] private float mouseVerticalClamp;
@@ -39,156 +55,180 @@ namespace Suntail
         [SerializeField] private KeyCode jumpKey = KeyCode.Space;
         [SerializeField] private KeyCode runKey = KeyCode.LeftShift;
 
-
         [Header("Footsteps")]
-        [Tooltip("Footstep source")]
         [SerializeField] private AudioSource footstepSource;
-
-        [Tooltip("Distance for ground texture checker")]
         [SerializeField] private float groundCheckDistance = 1.0f;
-
-        [Tooltip("Footsteps playing rate")]
         [SerializeField] [Range(1f, 2f)] private float footstepRate = 1f;
-
-        [Tooltip("Footstep rate when player running")]
         [SerializeField] [Range(1f, 2f)] private float runningFootstepRate = 1.5f;
-
-        [Tooltip("Add textures for this layer and add sounds to be played for this texture")]
         public List<GroundLayer> groundLayers = new List<GroundLayer>();
 
-        //Private movement variables
-        private float _horizontalMovement;
-        private float _verticalMovement;
-        private float _currentSpeed;
-        private Vector3 _moveDirection;
-        private Vector3 _velocity;
-        private CharacterController _characterController;
-        private bool _isRunning;
-        
-        //Private mouselook variables
-        private float _verticalRotation;
-        private float _yAxis;
-        private float _xAxis;
-        private bool _activeRotation;
+        [Header("Animation")]
+        public Animator playerAnimator;
 
-        //Private footstep system variables
-        private Terrain _terrain;
-        private TerrainData _terrainData;
-        private TerrainLayer[] _terrainLayers;
-        private AudioClip _previousClip;
-        private Texture2D _currentTexture;
-        private RaycastHit _groundHit;
-        private float _nextFootstep;
+        public PlayerState currentState;
+        private Dictionary<PlayerState, PlayerBaseState> states;
         
+        private float horizontalInput;
+        private float verticalInput;
+        private bool isRunning;
+        private Vector3 velocity;
+
+        private float verticalRotation;
+        private float yAxis;
+        private float xAxis;
+
+        private Terrain terrain;
+        private TerrainData terrainData;
+        private TerrainLayer[] terrainLayers;
+        private AudioClip previousClip;
+        private Texture2D currentTexture;
+        private RaycastHit groundHit;
+        private float nextFootstep;
+        
+        public float WalkSpeed => walkSpeed;
+        public float RunMultiplier => runMultiplier;
+        public float JumpForce => jumpForce;
+        public float Gravity => gravity;
+        public bool IsGrounded => CharacterController.isGrounded;
+        public float HorizontalInput => horizontalInput;
+        public float VerticalInput
+        {
+            get => verticalInput;
+            set => verticalInput = value;
+        }
+
+        public bool IsRunning => isRunning;
+        public CharacterController CharacterController { get; private set; }
+
+        public float FootstepRate => footstepRate;
+        public float RunningFootstepRate => runningFootstepRate;
+        public AudioSource FootstepSource => footstepSource;
+        public Texture2D CurrentTexture => currentTexture;
+        public AudioClip PreviousClip => previousClip;
+        public void SetPreviousClip(AudioClip clip) => previousClip = clip;
+        public KeyCode JumpKey => jumpKey;
+        public KeyCode RunKey => runKey;
+
+        public bool isHoldingWeapon; // 무기를 들고 있는가 ? 기본 true 값 설정
+
         private void Awake()
         {
-            _characterController = GetComponent<CharacterController>();
+            CharacterController = GetComponent<CharacterController>();
             GetTerrainData();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            isHoldingWeapon = true;
         }
 
-        //Getting all terrain data for footstep system
+        private void Start()
+        {
+            states = new Dictionary<PlayerState, PlayerBaseState>();
+            states.Add(PlayerState.Idle, new PlayerIdleState(this));
+            states.Add(PlayerState.Walk, new PlayerWalkState(this));
+            states.Add(PlayerState.Run, new PlayerRunState(this));
+            states.Add(PlayerState.Jump, new PlayerJumpState(this));
+            states.Add(PlayerState.Attack1, new PlayerAttack1(this));
+            states.Add(PlayerState.Attack2, new PlayerAttack2(this));
+            states.Add(PlayerState.Attack3, new PlayerAttack3(this));
+            states.Add(PlayerState.Attack4, new PlayerAttack4(this));
+            states.Add(PlayerState.Attack5, new PlayerAttack5(this));
+            states.Add(PlayerState.ShieldWait, new ShieldWait(this));
+            states.Add(PlayerState.ShieldWalk, new ShieldWalk(this));
+            states.Add(PlayerState.ShieldRun, new ShieldRun(this));
+            states.Add(PlayerState.ShieldAttack1, new ShieldAttack1(this));
+            states.Add(PlayerState.ShieldAttack2, new ShieldAttack2(this));
+            states.Add(PlayerState.ShieldAttack3, new ShieldAttack3(this));
+
+            ChangeState(PlayerState.Idle);
+        }
+
         private void GetTerrainData()
         {
             if (Terrain.activeTerrain)
             {
-                _terrain = Terrain.activeTerrain;
-                _terrainData = _terrain.terrainData;
-                _terrainLayers = _terrain.terrainData.terrainLayers;
+                terrain = Terrain.activeTerrain;
+                terrainData = terrain.terrainData;
+                terrainLayers = terrain.terrainData.terrainLayers;
             }
         }
 
         private void Update()
         {
-            Movement();
+            horizontalInput = Input.GetAxisRaw("Horizontal");
+            verticalInput = Input.GetAxisRaw("Vertical");
+            isRunning = Input.GetKey(runKey);
+            
             MouseLook();
             GroundChecker();
+
+            states[currentState].Update();
         }
 
-        //Character controller movement
-        private void Movement()
+        
+
+        public void ChangeState(PlayerState newState)
         {
-            if (_characterController.isGrounded && _velocity.y < 0)
+            if (currentState != newState)
             {
-                _velocity.y = -2f;
+                if (states.ContainsKey(currentState))
+                {
+                    states[currentState].Exit();
+                }
+                currentState = newState;
+                states[currentState].Enter();
             }
-            
-            if (Input.GetKey(jumpKey) && _characterController.isGrounded)
-            {
-                _velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-            }
-            
-            _horizontalMovement = Input.GetAxis("Horizontal");
-            _verticalMovement = Input.GetAxis("Vertical");
-
-            _moveDirection = transform.forward * _verticalMovement + transform.right * _horizontalMovement;
-            
-            _isRunning = Input.GetKey(runKey);
-            _currentSpeed = walkSpeed * (_isRunning ? runMultiplier : 1f);
-            _characterController.Move(_moveDirection * _currentSpeed * Time.deltaTime);
-
-            _velocity.y += gravity * Time.deltaTime;
-            _characterController.Move(_velocity * Time.deltaTime);
-
         }
 
         private void MouseLook()
-        {   
-            _xAxis = Input.GetAxis("Mouse X"); 
-            _yAxis = Input.GetAxis("Mouse Y");
+        {
+            xAxis = Input.GetAxis("Mouse X");
+            yAxis = Input.GetAxis("Mouse Y");
 
-            _verticalRotation += -_yAxis * mouseSensivity;
-            _verticalRotation = Mathf.Clamp(_verticalRotation, -mouseVerticalClamp, mouseVerticalClamp);
-            playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, _xAxis * mouseSensivity, 0);
+            verticalRotation += -yAxis * mouseSensivity;
+            verticalRotation = Mathf.Clamp(verticalRotation, -mouseVerticalClamp, mouseVerticalClamp);
+            playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+            transform.rotation *= Quaternion.Euler(0, xAxis * mouseSensivity, 0);
         }
 
-        //Playing footstep sound when controller moves and grounded
         private void FixedUpdate()
         {
-            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
+            if (CharacterController.isGrounded && (horizontalInput != 0 || verticalInput != 0))
             {
-                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
+                float currentFootstepRate = (isRunning ? runningFootstepRate : footstepRate);
 
-                if (_nextFootstep >= 100f)
+                if (nextFootstep >= 100f)
                 {
-                    {
-                        PlayFootstep();
-                        _nextFootstep = 0;
-                    }
+                    PlayFootstep();
+                    nextFootstep = 0;
                 }
-                _nextFootstep += (currentFootstepRate * walkSpeed);
+                nextFootstep += (currentFootstepRate * walkSpeed);
             }
         }
 
-
-        //Check where the controller is now and identify the texture of the component
         private void GroundChecker()
         {
             Ray checkerRay = new Ray(transform.position + (Vector3.up * 0.1f), Vector3.down);
 
-            if (Physics.Raycast(checkerRay, out _groundHit, groundCheckDistance))
+            if (Physics.Raycast(checkerRay, out groundHit, groundCheckDistance))
             {
-                if (_groundHit.collider.GetComponent<Terrain>())
+                if (groundHit.collider.GetComponent<Terrain>())
                 {
-                    _currentTexture = _terrainLayers[GetTerrainTexture(transform.position)].diffuseTexture;
+                    currentTexture = terrainLayers[GetTerrainTexture(transform.position)].diffuseTexture;
                 }
-                if (_groundHit.collider.GetComponent<Renderer>())
+                if (groundHit.collider.GetComponent<Renderer>())
                 {
-                    _currentTexture = GetRendererTexture();
+                    currentTexture = GetRendererTexture();
                 }
             }
         }
 
-        //Play a footstep sound depending on the specific texture
         private void PlayFootstep()
         {
             for (int i = 0; i < groundLayers.Count; i++)
             {
                 for (int k = 0; k < groundLayers[i].groundTextures.Length; k++)
                 {
-                    if (_currentTexture == groundLayers[i].groundTextures[k])
+                    if (currentTexture == groundLayers[i].groundTextures[k])
                     {
                         footstepSource.PlayOneShot(RandomClip(groundLayers[i].footstepSounds));
                     }
@@ -196,17 +236,16 @@ namespace Suntail
             }
         }
 
-        //Return an array of textures depending on location of the controller on terrain
         private float[] GetTerrainTexturesArray(Vector3 controllerPosition)
         {
-            _terrain = Terrain.activeTerrain;
-            _terrainData = _terrain.terrainData;
-            Vector3 terrainPosition = _terrain.transform.position;
+            terrain = Terrain.activeTerrain;
+            terrainData = terrain.terrainData;
+            Vector3 terrainPosition = terrain.transform.position;
 
-            int positionX = (int)(((controllerPosition.x - terrainPosition.x) / _terrainData.size.x) * _terrainData.alphamapWidth);
-            int positionZ = (int)(((controllerPosition.z - terrainPosition.z) / _terrainData.size.z) * _terrainData.alphamapHeight);
+            int positionX = (int)(((controllerPosition.x - terrainPosition.x) / terrainData.size.x) * terrainData.alphamapWidth);
+            int positionZ = (int)(((controllerPosition.z - terrainPosition.z) / terrainData.size.z) * terrainData.alphamapHeight);
 
-            float[,,] layerData = _terrainData.GetAlphamaps(positionX, positionZ, 1, 1);
+            float[,,] layerData = terrainData.GetAlphamaps(positionX, positionZ, 1, 1);
 
             float[] texturesArray = new float[layerData.GetUpperBound(2) + 1];
             for (int n = 0; n < texturesArray.Length; ++n)
@@ -216,7 +255,6 @@ namespace Suntail
             return texturesArray;
         }
 
-        //Returns the zero index of the prevailing texture based on the controller location on terrain
         private int GetTerrainTexture(Vector3 controllerPosition)
         {
             float[] array = GetTerrainTexturesArray(controllerPosition);
@@ -225,7 +263,6 @@ namespace Suntail
 
             for (int n = 0; n < array.Length; ++n)
             {
-
                 if (array[n] > maxArray)
                 {
                     maxArrayIndex = n;
@@ -235,15 +272,13 @@ namespace Suntail
             return maxArrayIndex;
         }
 
-        //Returns the current main texture of renderer where the controller is located now
         private Texture2D GetRendererTexture()
         {
             Texture2D texture;
-            texture = (Texture2D)_groundHit.collider.gameObject.GetComponent<Renderer>().material.mainTexture;
+            texture = (Texture2D)groundHit.collider.gameObject.GetComponent<Renderer>().material.mainTexture;
             return texture;
         }
 
-        //Returns an audio clip from an array, prevents a newly played clip from being repeated and randomize pitch
         private AudioClip RandomClip(AudioClip[] clips)
         {
             int attempts = 2;
@@ -251,13 +286,12 @@ namespace Suntail
 
             AudioClip selectedClip = clips[Random.Range(0, clips.Length)];
 
-            while (selectedClip == _previousClip && attempts > 0)
+            while (selectedClip == previousClip && attempts > 0)
             {
                 selectedClip = clips[Random.Range(0, clips.Length)];
-
                 attempts--;
             }
-            _previousClip = selectedClip;
+            previousClip = selectedClip;
             return selectedClip;
         }
     }

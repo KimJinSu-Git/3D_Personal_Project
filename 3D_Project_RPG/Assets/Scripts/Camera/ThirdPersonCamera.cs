@@ -44,19 +44,19 @@ public class ThirdPersonCamera : MonoBehaviour
 
         Pitch = Mathf.Clamp(Pitch, MinPitch, MaxPitch);
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetMouseButton(0))
         {
             saveYaw = Yaw;
             savePitch = Pitch;
         }
 
-        if (Input.GetKeyUp(KeyCode.F))
+        if (Input.GetKeyUp(KeyCode.LeftAlt) && Input.GetMouseButton(0))
         {
             Yaw = saveYaw;
             Pitch = savePitch;
         }
 
-        if (Input.GetKey(KeyCode.F) == false)
+        if (Input.GetKey(KeyCode.LeftAlt) == false)
         {
             player.rotation = Quaternion.Euler(0, Yaw, 0);
         }
@@ -65,8 +65,20 @@ public class ThirdPersonCamera : MonoBehaviour
     private void UpdateCameraPosition()
     {
         Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0);
-        Vector3 offset = rotation * new Vector3(0, CameraHeight, -CameraDistance);
-        transform.position = player.position + offset;
+        Vector3 desiredCameraPos = player.position + rotation * new Vector3(0, CameraHeight, -CameraDistance);
+        
+        // 카메라 충돌 감지
+        Vector3 rayOrigin = player.position + Vector3.up * CameraHeight;
+        Vector3 direction = (desiredCameraPos - rayOrigin).normalized;
+        float maxDistance = CameraDistance;
+        
+        if (Physics.Raycast(rayOrigin, direction, out RaycastHit hit, CameraDistance))
+        {
+            // 충돌 지점까지 카메라 위치 조정
+            desiredCameraPos = hit.point + new Vector3(0, 0.2f, 0);
+        }
+        
+        transform.position = desiredCameraPos;
         transform.LookAt(player.position + Vector3.up * 1f);
     }
 }

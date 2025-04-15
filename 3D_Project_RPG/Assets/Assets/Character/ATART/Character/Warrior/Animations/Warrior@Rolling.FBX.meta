@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 4ed47325b5df3c74b8f7110aaae9985b
 ModelImporter:
-  serializedVersion: 26
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
@@ -18,7 +18,7 @@ ModelImporter:
       name: PlayerMale02
     second: {fileID: 2100000, guid: 0fab256eb2def0b41904806b25b0eb3a, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -27,6 +27,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -218,28 +219,29 @@ ModelImporter:
         weight: 1
       - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          Hair
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 Hair
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          Hair/Bip001 Hair02
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 Hair/Bip001 Hair02
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          Hair/Bip001 Hair02/Bip001 Hair03
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 Hair/Bip001 Hair02/Bip001 Hair03
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          Hair/Bip001 Hair02/Bip001 Hair03/Bip001 Hair04
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 Hair/Bip001 Hair02/Bip001 Hair03/Bip001 Hair04
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          Jaw
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 Jaw
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          L Eye
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 L Eye
         weight: 1
-      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001 Head/Bip001
-          R Eye
+      - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+          Head/Bip001 R Eye
         weight: 1
       - path: Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle
         weight: 1
@@ -331,26 +333,35 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -361,7 +372,6 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 1
-  copyAvatar: 1
   humanDescription:
     serializedVersion: 3
     human:
@@ -1137,8 +1147,13 @@ ModelImporter:
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: b04406949810a0a46b21e74416b63350,
     type: 3}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
+  avatarSetup: 2
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
