@@ -38,7 +38,15 @@ namespace suntail
         // 공격
         protected void Attack()
         {
-            
+            // 플레이어어가 무기를 들고 있고, 우클릭 버튼을 누르지 않는 상태에서, 좌클릭이 입력된다면 기본 공격 상태로 전환.
+            if (Input.GetMouseButtonDown(0) && player.isHoldingWeapon && !Input.GetMouseButton(1))
+            {
+                player.ChangeState(PlayerState.Attack);
+            } // 플레이어가 무기를 들고 있고, 우클릭 버튼을 누르고 있을 때, 좌클릭이 입력된다면 쉴드 공경 상태로 전환.
+            else if (Input.GetMouseButtonDown(0) && player.isHoldingWeapon && Input.GetMouseButton(1))
+            {
+                player.ChangeState(PlayerState.ShieldAttack);
+            }
         }
     }
 
@@ -56,6 +64,7 @@ namespace suntail
         {
             ApplyGravity();
             WeaponSwap();
+            Attack();
 
             if (Input.GetMouseButtonDown(1))
             {
@@ -111,6 +120,12 @@ namespace suntail
         {
             ApplyGravity();
             Move();
+            Attack();
+            
+            if (Input.GetMouseButtonDown(1))
+            {
+                player.ChangeState(PlayerState.ShieldWalk);
+            }
             
             switch (player.VerticalInput)
             {
@@ -156,6 +171,12 @@ namespace suntail
         {
             ApplyGravity();
             Move(player.RunMultiplier);
+            Attack();
+            
+            if (Input.GetMouseButtonDown(1))
+            {
+                player.ChangeState(PlayerState.ShieldRun);
+            }
             
             switch (player.VerticalInput)
             {
@@ -221,103 +242,48 @@ namespace suntail
         public override void Exit() { }
     }
 
-    // 기본 공격 콤보 1
-    public class PlayerAttack1 : PlayerBaseState
+    // 기본 공격 콤보
+    public class PlayerAttack : PlayerBaseState
     {
-        public PlayerAttack1(PlayerController player) : base(player) {}
+        private static readonly int Attack = Animator.StringToHash("Attack");
+        private bool comboAttackSuccess;
+        public PlayerAttack(PlayerController player) : base(player) {}
 
         public override void Enter()
         {
-            
+            comboAttackSuccess = false;
+            player.playerAnimator.Play("Attack1");
         }
 
         public override void Update()
         {
-            
-        }
+            AnimatorStateInfo playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
 
-        public override void Exit()
-        {
+            if (playerStateInfo.normalizedTime < 0.25f)
+            {
+                comboAttackSuccess = false;
+            }
             
-        }
-    }
-    
-    // 기본 공격 콤보 2
-    public class PlayerAttack2 : PlayerBaseState
-    {
-        public PlayerAttack2(PlayerController player) : base(player) {}
+            // 애니메이션 시간이 0.3~0.7 사이에 좌클릭이 입력된다면.
+            if (playerStateInfo.normalizedTime is > 0.3f and < 0.7f && Input.GetMouseButtonDown(0))
+            {
+                // 다음 콤보 공격으로 넘어가라.
+                player.playerAnimator.SetTrigger(Attack);
+                comboAttackSuccess = true;
+            }
 
-        public override void Enter()
-        {
+            // 콤보공격의 마지막 공격인 5번째 공격이고, 애니메이션 시간이 0.9가 지났다면 Idle로 전환 !
+            if (playerStateInfo.IsName("Attack5") && playerStateInfo.normalizedTime > 0.9)
+            {
+                player.ChangeState(PlayerState.Idle);
+            }
             
-        }
-
-        public override void Update()
-        {
-            
-        }
-
-        public override void Exit()
-        {
-            
-        }
-    }
-    
-    // 기본 공격 콤보 3
-    public class PlayerAttack3 : PlayerBaseState
-    {
-        public PlayerAttack3(PlayerController player) : base(player) {}
-
-        public override void Enter()
-        {
-            
-        }
-
-        public override void Update()
-        {
-            
-        }
-
-        public override void Exit()
-        {
-            
-        }
-    }
-    
-    // 기본 공격 콤보 4
-    public class PlayerAttack4 : PlayerBaseState
-    {
-        public PlayerAttack4(PlayerController player) : base(player) {}
-
-        public override void Enter()
-        {
-            
-        }
-
-        public override void Update()
-        {
-            
-        }
-
-        public override void Exit()
-        {
-            
-        }
-    }
-    
-    // 기본 공격 콤보 5
-    public class PlayerAttack5 : PlayerBaseState
-    {
-        public PlayerAttack5(PlayerController player) : base(player) {}
-
-        public override void Enter()
-        {
-            
-        }
-
-        public override void Update()
-        {
-            
+            // 애니메이션의 재생시간이 0.9초가 넘었음에도 콤보 공격이 입력되지 않았다면
+            if (playerStateInfo.normalizedTime > 0.9 && !comboAttackSuccess)
+            {
+                // Idle 상태로 전환하라.
+                player.ChangeState(PlayerState.Idle);
+            }
         }
 
         public override void Exit()
@@ -339,6 +305,7 @@ namespace suntail
         public override void Update()
         {
             Move();
+            Attack();
             
             if (!(Input.GetMouseButton(1)))
             {
@@ -375,6 +342,7 @@ namespace suntail
         public override void Update()
         {
             Move();
+            Attack();
             
             if (!(Input.GetMouseButton(1)))
             {
@@ -418,6 +386,7 @@ namespace suntail
         public override void Update()
         {
             Move(player.RunMultiplier);
+            Attack();
             
             if (!(Input.GetMouseButton(1)))
             {
@@ -448,61 +417,57 @@ namespace suntail
         }
     }
     
-    // 방패로 공격하는 콥보 1
-    public class ShieldAttack1 : PlayerBaseState
+    // 방패로 공격하는 콥보 
+    public class ShieldAttack : PlayerBaseState
     {
-        public ShieldAttack1(PlayerController player) : base(player) {}
+        private bool comboAttackSuccess;
+        public ShieldAttack(PlayerController player) : base(player) {}
 
         public override void Enter()
         {
-            
+            comboAttackSuccess = false;
+            player.playerAnimator.Play("ShieldAttack1");
         }
 
         public override void Update()
         {
-            
-        }
+            AnimatorStateInfo playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
 
-        public override void Exit()
-        {
+            if (playerStateInfo.normalizedTime < 0.25f)
+            {
+                comboAttackSuccess = false;
+            }
             
-        }
-    }
-    
-    // 방패로 공격하는 콥보 2
-    public class ShieldAttack2 : PlayerBaseState
-    {
-        public ShieldAttack2(PlayerController player) : base(player) {}
+            // 애니메이션 시간이 0.3~0.7 사이에 우클릭을 누른 채로 좌클릭이 입력된다면.
+            if (playerStateInfo.normalizedTime is > 0.3f and < 0.7f && Input.GetMouseButtonDown(0) && Input.GetMouseButton(1))
+            {
+                // 다음 콤보 공격으로 넘어가라.
+                player.playerAnimator.SetTrigger("ShieldAttack");
+                comboAttackSuccess = true;
+            }
 
-        public override void Enter()
-        {
+            // 콤보공격의 마지막 공격인 3번째 공격이고, 애니메이션 시간이 0.9가 지났을 때
+            if (playerStateInfo.IsName("ShieldAttack3") && playerStateInfo.normalizedTime > 0.9)
+            {
+                // 우클릭을 누르고 있다면
+                if (Input.GetMouseButton(1))
+                {
+                    // 쉴드 대기 상태로 전환
+                    player.ChangeState(PlayerState.ShieldWait);
+                }
+                else
+                {
+                    // 안 누르고 있다면 Idle 상태로 전환
+                    player.ChangeState(PlayerState.Idle);
+                }
+            }
             
-        }
-
-        public override void Update()
-        {
-            
-        }
-
-        public override void Exit()
-        {
-            
-        }
-    }
-    
-    // 방패로 공격하는 콥보 3
-    public class ShieldAttack3 : PlayerBaseState
-    {
-        public ShieldAttack3(PlayerController player) : base(player) {}
-
-        public override void Enter()
-        {
-            
-        }
-
-        public override void Update()
-        {
-            
+            // 애니메이션의 재생시간이 0.9초가 넘었음에도 콤보 공격이 입력되지 않았다면
+            if (playerStateInfo.normalizedTime > 0.9 && !comboAttackSuccess)
+            {
+                // Idle 상태로 전환하라.
+                player.ChangeState(PlayerState.Idle);
+            }
         }
 
         public override void Exit()
