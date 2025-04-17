@@ -12,9 +12,13 @@ public class Enemy : MonoBehaviour
     public int maxHealth;
     public int currentHealth;
 
+    [Header("Damage")] 
+    public int damage;
+    
     [Header("Target")]
     public Transform target;
 
+    // 기본 감지 범위 설정 (하이어라키 창에서 몬스터 개체애 따라 수정 가능)
     [Header("Ranges")]
     public float detectionRange = 10f; // 감지 범위
     public float chaseRange = 15f; // 추격 범위

@@ -282,7 +282,7 @@ Transform:
   m_GameObject: {fileID: 7412851423003978673}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 67.5, y: 12, z: 93.51}
+  m_LocalPosition: {x: 124.74, y: 12, z: 67.07}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -336,6 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 100
+  damage: 0
   target: {fileID: 0}
   detectionRange: 10
   chaseRange: 15

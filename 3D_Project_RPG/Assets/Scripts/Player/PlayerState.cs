@@ -225,6 +225,8 @@ namespace suntail
             }
             
             verticalVelocity = Mathf.Sqrt(player.JumpForce * -2f * player.Gravity);
+            
+            Debug.Log("들어왔어 ??");
         }
 
         public override void Update()
@@ -275,7 +277,6 @@ namespace suntail
             else if (playerStateInfo.IsName("Attack2") && playerStateInfo.normalizedTime is >= 0.05f and <= 0.45f)
             {
                 player.playerSwordCollider.enabled = true;
-                Debug.Log("여기 찍히기는 해 ?");
             }
             else if (playerStateInfo.IsName("Attack3") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.40f)
             {

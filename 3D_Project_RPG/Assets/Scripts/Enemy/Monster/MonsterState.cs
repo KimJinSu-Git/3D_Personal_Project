@@ -153,6 +153,23 @@ public class MonsterChaseState : MonsterBaseState
 
     public override void Update()
     {
+        // 초기 위치에서 너무 멀리 벗어났다면 초기 위치로 돌아감 (최우선 순위)
+        float distanceToInitial = Vector3.Distance(monster.transform.position, monster.initialPosition);
+        if (distanceToInitial > monster.maxDistance)
+        {
+            monster.nav.SetDestination(monster.initialPosition);
+            if (!string.IsNullOrEmpty(controller.walkAnimation))
+            {
+                PlayAnimation(controller.walkAnimation);
+            }
+            // 초기 위치에 거의 도착하면 Idle 상태로 전환
+            if (distanceToInitial <= monster.nav.stoppingDistance)
+            {
+                controller.ChangeState(controller.IdleState);
+            }
+            return;
+        }
+        
         // 타겟이 없거나, 타겟과의 거리가 추격 범위를 벗어나면 추격 시작 위치로 이동
         if (monster.target == null || Vector3.Distance(monster.transform.position, monster.target.position) > monster.chaseRange)
         {
@@ -168,20 +185,20 @@ public class MonsterChaseState : MonsterBaseState
             }
             return;
         }
-
+        
         float distanceToTarget = Vector3.Distance(monster.transform.position, monster.target.position);
-
+        
         // 타겟과의 거리가 공격 가능 거리 이내라면 Attack 상태로 전환하고 이동을 멈춤
-        if (distanceToTarget <= monster.nav.stoppingDistance + 2f) // 공격 가능 거리
+        if (distanceToTarget <= monster.nav.stoppingDistance + 1f) // 공격 가능 거리
         {
             monster.nav.isStopped = true; // 이동 멈춤
             controller.ChangeState(controller.AttackState);
             return;
         }
-
+        
         // 타겟의 위치를 NavMeshAgent의 목표 지점으로 설정하여 추격
         monster.nav.SetDestination(monster.target.position);
-        // Run 애니메이션이 설정되어 있다면 재생
+        
         if (!string.IsNullOrEmpty(controller.runAnimation))
         {
             PlayAnimation(controller.runAnimation);
