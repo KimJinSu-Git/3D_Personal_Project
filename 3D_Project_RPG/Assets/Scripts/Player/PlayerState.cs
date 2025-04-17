@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Suntail;
 using UnityEngine;
 
@@ -66,7 +67,7 @@ namespace suntail
             WeaponSwap();
             Attack();
 
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && player.isHoldingWeapon)
             {
                 player.ChangeState(PlayerState.ShieldWait);
             }
@@ -122,7 +123,7 @@ namespace suntail
             Move();
             Attack();
             
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && player.isHoldingWeapon)
             {
                 player.ChangeState(PlayerState.ShieldWalk);
             }
@@ -173,7 +174,7 @@ namespace suntail
             Move(player.RunMultiplier);
             Attack();
             
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && player.isHoldingWeapon)
             {
                 player.ChangeState(PlayerState.ShieldRun);
             }
@@ -231,12 +232,16 @@ namespace suntail
             verticalVelocity += player.Gravity * Time.deltaTime;
             Vector3 moveDirection = (player.transform.forward * player.VerticalInput + player.transform.right * player.HorizontalInput) * (player.WalkSpeed * Time.deltaTime);
             moveDirection.y = verticalVelocity * Time.deltaTime;
+            
             player.CharacterController.Move(moveDirection);
 
             if (player.IsGrounded && verticalVelocity < 0)
             {
                 player.ChangeState(PlayerState.Idle);
             }
+            
+            // 적어만 놓자
+            // player.CharacterController.Move(moveDirection);
         }
 
         public override void Exit() { }
@@ -247,6 +252,7 @@ namespace suntail
     {
         private static readonly int Attack = Animator.StringToHash("Attack");
         private bool comboAttackSuccess;
+        private AnimatorStateInfo playerStateInfo;
         public PlayerAttack(PlayerController player) : base(player) {}
 
         public override void Enter()
@@ -257,19 +263,48 @@ namespace suntail
 
         public override void Update()
         {
-            AnimatorStateInfo playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
+            ApplyGravity();
+            
+            playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
 
-            if (playerStateInfo.normalizedTime < 0.25f)
+            // 애니메이션이 Attack1 상태이고 애니메이션 재생시간 0.15~0.30초 사이일 때에만 검의 콜라이더 키기
+            if (playerStateInfo.IsName("Attack1") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.30f)
             {
-                comboAttackSuccess = false;
+                player.playerSwordCollider.enabled = true;
+            }
+            else if (playerStateInfo.IsName("Attack2") && playerStateInfo.normalizedTime is >= 0.05f and <= 0.45f)
+            {
+                player.playerSwordCollider.enabled = true;
+                Debug.Log("여기 찍히기는 해 ?");
+            }
+            else if (playerStateInfo.IsName("Attack3") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.40f)
+            {
+                player.playerSwordCollider.enabled = true;
+            }
+            else if (playerStateInfo.IsName("Attack4") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.50f)
+            {
+                player.playerSwordCollider.enabled = true;
+            }
+            else if (playerStateInfo.IsName("Attack5") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.30f)
+            {
+                player.playerSwordCollider.enabled = true;
+            }
+            else
+            {
+                player.playerSwordCollider.enabled = false;
             }
             
-            // 애니메이션 시간이 0.3~0.7 사이에 좌클릭이 입력된다면.
-            if (playerStateInfo.normalizedTime is > 0.3f and < 0.7f && Input.GetMouseButtonDown(0))
+            switch (playerStateInfo.normalizedTime)
             {
-                // 다음 콤보 공격으로 넘어가라.
-                player.playerAnimator.SetTrigger(Attack);
-                comboAttackSuccess = true;
+                case < 0.25f:
+                    comboAttackSuccess = false;
+                    break;
+                // 애니메이션 시간이 0.3~0.7 사이에 좌클릭이 입력된다면.
+                case > 0.3f and < 0.7f when Input.GetMouseButtonDown(0):
+                    // 다음 콤보 공격으로 넘어가라.
+                    player.playerAnimator.SetTrigger(Attack);
+                    comboAttackSuccess = true;
+                    break;
             }
 
             // 콤보공격의 마지막 공격인 5번째 공격이고, 애니메이션 시간이 0.9가 지났다면 Idle로 전환 !
@@ -288,8 +323,10 @@ namespace suntail
 
         public override void Exit()
         {
-            
+            // 혹시 모르니 나갈 때 한 번더 콜라이더 꺼주기
+            player.playerSwordCollider.enabled = false;
         }
+        
     }
     
     // 방패 들고 가만히 있는 상태
@@ -304,6 +341,7 @@ namespace suntail
 
         public override void Update()
         {
+            ApplyGravity();
             Move();
             Attack();
             
@@ -341,6 +379,7 @@ namespace suntail
 
         public override void Update()
         {
+            ApplyGravity();
             Move();
             Attack();
             
@@ -385,6 +424,7 @@ namespace suntail
 
         public override void Update()
         {
+            ApplyGravity();
             Move(player.RunMultiplier);
             Attack();
             
@@ -420,7 +460,9 @@ namespace suntail
     // 방패로 공격하는 콥보 
     public class ShieldAttack : PlayerBaseState
     {
+        private static readonly int ShieldAttack1 = Animator.StringToHash("ShieldAttack");
         private bool comboAttackSuccess;
+        private AnimatorStateInfo playerStateInfo;
         public ShieldAttack(PlayerController player) : base(player) {}
 
         public override void Enter()
@@ -431,7 +473,26 @@ namespace suntail
 
         public override void Update()
         {
-            AnimatorStateInfo playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
+            ApplyGravity();
+            
+            playerStateInfo = player.playerAnimator.GetCurrentAnimatorStateInfo(0);
+            
+            if (playerStateInfo.IsName("ShieldAttack1") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.35f)
+            {
+                player.playerShieldCollider.enabled = true;
+            }
+            else if (playerStateInfo.IsName("ShieldAttack2") && playerStateInfo.normalizedTime <= 0.35f)
+            {
+                player.playerShieldCollider.enabled = true;
+            }
+            else if (playerStateInfo.IsName("ShieldAttack3") && playerStateInfo.normalizedTime is >= 0.15f and <= 0.40f)
+            {
+                player.playerShieldCollider.enabled = true;
+            }
+            else
+            {
+                player.playerShieldCollider.enabled = false;
+            }
 
             if (playerStateInfo.normalizedTime < 0.25f)
             {
@@ -442,7 +503,7 @@ namespace suntail
             if (playerStateInfo.normalizedTime is > 0.3f and < 0.7f && Input.GetMouseButtonDown(0) && Input.GetMouseButton(1))
             {
                 // 다음 콤보 공격으로 넘어가라.
-                player.playerAnimator.SetTrigger("ShieldAttack");
+                player.playerAnimator.SetTrigger(ShieldAttack1);
                 comboAttackSuccess = true;
             }
 
@@ -472,7 +533,7 @@ namespace suntail
 
         public override void Exit()
         {
-            
+            player.playerShieldCollider.enabled = false;
         }
     }
 }

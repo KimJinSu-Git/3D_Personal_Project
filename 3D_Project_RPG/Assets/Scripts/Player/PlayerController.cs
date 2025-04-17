@@ -62,6 +62,12 @@ namespace Suntail
         public PlayerState currentState;
         private Dictionary<PlayerState, PlayerBaseState> states;
         
+        [Header("Collider")]
+        public Collider playerSwordCollider;
+        public Collider playerShieldCollider;
+        
+        public bool isHoldingWeapon; // 무기를 들고 있는가 ? 기본 true 값 설정
+        
         private float horizontalInput;
         private float verticalInput;
         private bool isRunning;
@@ -103,8 +109,6 @@ namespace Suntail
         public KeyCode JumpKey => jumpKey;
         public KeyCode RunKey => runKey;
 
-        public bool isHoldingWeapon; // 무기를 들고 있는가 ? 기본 true 값 설정
-
         private void Awake()
         {
             CharacterController = GetComponent<CharacterController>();
@@ -112,6 +116,9 @@ namespace Suntail
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             isHoldingWeapon = true;
+
+            playerSwordCollider.enabled = false;
+            playerShieldCollider.enabled = false;
         }
 
         private void Start()
