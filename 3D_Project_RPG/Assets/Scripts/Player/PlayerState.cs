@@ -297,6 +297,7 @@ namespace suntail
             switch (playerStateInfo.normalizedTime)
             {
                 case < 0.25f:
+                    player.playerAnimator.ResetTrigger(Attack);
                     comboAttackSuccess = false;
                     break;
                 // 애니메이션 시간이 0.3~0.7 사이에 좌클릭이 입력된다면.
@@ -304,6 +305,8 @@ namespace suntail
                     // 다음 콤보 공격으로 넘어가라.
                     player.playerAnimator.SetTrigger(Attack);
                     comboAttackSuccess = true;
+                    break;
+                default:
                     break;
             }
 
