@@ -153,6 +153,12 @@ namespace Suntail
             verticalInput = Input.GetAxisRaw("Vertical");
             isRunning = Input.GetKey(runKey);
             
+            playerAnimator.SetFloat("Horizontal", horizontalInput);
+            playerAnimator.SetFloat("Vertical", verticalInput);
+            playerAnimator.SetBool("isMoving", Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f);
+            playerAnimator.SetBool("isRunning", isRunning);
+            playerAnimator.SetBool("isHoldingWeapon", isHoldingWeapon);
+            
             MouseLook();
             GroundChecker();
 

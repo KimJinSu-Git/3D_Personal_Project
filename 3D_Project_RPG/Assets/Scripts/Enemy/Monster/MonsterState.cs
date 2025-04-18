@@ -189,7 +189,7 @@ public class MonsterChaseState : MonsterBaseState
         float distanceToTarget = Vector3.Distance(monster.transform.position, monster.target.position);
         
         // 타겟과의 거리가 공격 가능 거리 이내라면 Attack 상태로 전환하고 이동을 멈춤
-        if (distanceToTarget <= monster.nav.stoppingDistance + 1f) // 공격 가능 거리
+        if (distanceToTarget <= monster.nav.stoppingDistance + 2f) // 공격 가능 거리
         {
             monster.nav.isStopped = true; // 이동 멈춤
             controller.ChangeState(controller.AttackState);

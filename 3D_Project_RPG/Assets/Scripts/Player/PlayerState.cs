@@ -82,27 +82,14 @@ namespace suntail
             }
         }
 
-        public override void Exit()
-        {
-            
-        }
-        
+        public override void Exit() { }
+
         private void WeaponSwap()
         {
             if (Input.GetKeyDown(KeyCode.F))
-            { 
-                // true 라면 무기를 들고 있는것이고, false라면 무기를 등에 돌려 넣은것
-                switch (player.isHoldingWeapon)
-                {
-                    case true:
-                        player.playerAnimator.Play("Sheathe");
-                        player.isHoldingWeapon = false;
-                        break;
-                    case false:
-                        player.playerAnimator.Play("UnSheathe");
-                        player.isHoldingWeapon = true;
-                        break;
-                }
+            {
+                player.playerAnimator.Play(player.isHoldingWeapon ? "Sheathe" : "UnSheathe");
+                player.isHoldingWeapon = !player.isHoldingWeapon;
             }
         }
     }
@@ -112,50 +99,37 @@ namespace suntail
     {
         public PlayerWalkState(PlayerController player) : base(player) { }
 
-        public override void Enter()
-        {
-           
-        }
+        public override void Enter() { }
 
         public override void Update()
         {
             ApplyGravity();
             Move();
             Attack();
-            
+
             if (Input.GetMouseButtonDown(1) && player.isHoldingWeapon)
             {
                 player.ChangeState(PlayerState.ShieldWalk);
             }
-            
-            switch (player.VerticalInput)
+
+            if (Mathf.Abs(player.VerticalInput) < 0.1f && Mathf.Abs(player.HorizontalInput) < 0.1f)
             {
-                case > 0.1f:
-                    player.playerAnimator.Play(player.isHoldingWeapon ? "Walk_F" : "nWalk_F");
-                    break;
-                case < -0.1f:
-                    player.playerAnimator.Play(player.isHoldingWeapon ? "Walk_B" : "nWalk_B");
-                    break;
-                case 0:
-                    player.ChangeState(PlayerState.Idle);
-                    break;
+                player.ChangeState(PlayerState.Idle);
             }
 
-            if (player.IsRunning && Mathf.Abs(player.VerticalInput) > 0.1f)
+            if (player.IsRunning && (Mathf.Abs(player.VerticalInput) > 0.1f || Mathf.Abs(player.HorizontalInput) > 0.1f))
             {
                 player.ChangeState(PlayerState.Run);
             }
-            
+
             if (Input.GetKey(player.JumpKey) && player.IsGrounded)
             {
                 player.ChangeState(PlayerState.Jump);
             }
         }
 
-        public override void Exit()
-        {
-            
-        }
+        public override void Exit() { }
+
     }
 
     // 플레이어 달리는 상태
@@ -163,40 +137,24 @@ namespace suntail
     {
         public PlayerRunState(PlayerController player) : base(player) { }
 
-        public override void Enter()
-        {
-            
-        }
+        public override void Enter() { }
 
         public override void Update()
         {
             ApplyGravity();
             Move(player.RunMultiplier);
             Attack();
-            
+
             if (Input.GetMouseButtonDown(1) && player.isHoldingWeapon)
             {
                 player.ChangeState(PlayerState.ShieldRun);
             }
-            
-            switch (player.VerticalInput)
-            {
-                case > 0.1f:
-                    player.playerAnimator.Play(player.isHoldingWeapon ? "Run_F" : "nRun_F");
-                    break;
-                case < -0.1f:
-                    player.playerAnimator.Play(player.isHoldingWeapon ? "Run_B" : "nRun_B");
-                    break;
-                case 0:
-                    player.ChangeState(PlayerState.Idle);
-                    break;
-            }
 
-            if (player.IsRunning == false)
+            if (!player.IsRunning || (Mathf.Abs(player.VerticalInput) < 0.1f && Mathf.Abs(player.HorizontalInput) < 0.1f))
             {
                 player.ChangeState(PlayerState.Walk);
             }
-            
+
             if (Input.GetKey(player.JumpKey) && player.IsGrounded)
             {
                 player.ChangeState(PlayerState.Jump);
@@ -226,7 +184,6 @@ namespace suntail
             
             verticalVelocity = Mathf.Sqrt(player.JumpForce * -2f * player.Gravity);
             
-            Debug.Log("들어왔어 ??");
         }
 
         public override void Update()
