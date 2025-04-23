@@ -1,0 +1,158 @@
+using System.Collections;
+using System.Collections.Generic;
+using Suntail;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public static class DialogueActionHandler
+{
+    public static void Execute(string action)
+    {
+        if (string.IsNullOrEmpty(action)) return;
+
+        if (action.StartsWith("StartQuest:"))
+        {
+            string questID = action.Split(':')[1];
+            QuestManager.Instance.StartQuest(questID);
+        }
+
+        if (action.StartsWith("CompleteQuest:"))
+        {
+            string npcName = action.Split(':')[1];
+            QuestManager.Instance.CompleteQuestNotifyNpc(npcName);
+        }
+    }
+}
+
+public class DialogueUI : MonoBehaviour
+{
+    [Header("UI Elements")]
+    public GameObject dialoguePanel;
+    public TMP_Text nameText;
+    public TMP_Text dialogueText;
+    public Button choice1Button;
+    public Button choice2Button;
+    [SerializeField] private Canvas playerHealthCanvas;
+
+    private DialogueLoader loader;
+    private DialogueLine currentLine;
+    private PlayerController player;
+
+    private bool isTyping = false;
+    private bool isLastLine = false;
+    private NPC currentNPC;
+
+    public bool IsTyping => isTyping;
+    public bool IsLastLine => isLastLine;
+    public DialogueLine CurrentLine => currentLine;
+
+    private void Start()
+    {
+        loader = FindObjectOfType<DialogueLoader>();
+        player = FindObjectOfType<PlayerController>();
+        dialoguePanel.SetActive(false);
+    }
+
+    public void StartDialogue(string startId)
+    {
+        playerHealthCanvas.enabled = false;
+        dialoguePanel.SetActive(true);
+
+        currentNPC = GameObject.Find(startId)?.GetComponent<NPC>();
+
+        if (currentNPC == null)
+        {
+            Debug.LogWarning("Npc가 없어요");
+        }
+        
+        currentNPC.FacePlayer(true);
+        QuestManager.Instance.CompleteQuestNotifyNpc(currentNPC.npcName); 
+        
+        string dialogueId = currentNPC.GetDialogueId();
+        
+        DialogueLine line = loader.GetDialogue(dialogueId);
+        ShowLine(line);
+        player.ChangeState(PlayerState.Talking);
+    }
+
+    public void SkipTyping()
+    {
+        StopAllCoroutines();
+        dialogueText.text = currentLine.text;
+        isTyping = false;
+
+        ActiveChoices();
+    }
+
+    private void ShowLine(DialogueLine line)
+    {
+        if (line == null) return;
+
+        currentLine = line;
+
+        nameText.text = line.npcName;
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(line.text));
+
+        bool hasChoice1 = !string.IsNullOrEmpty(line.choice1);
+        bool hasChoice2 = !string.IsNullOrEmpty(line.choice2);
+
+        isLastLine = !hasChoice1 && !hasChoice2;
+
+        choice1Button.gameObject.SetActive(false);
+        choice2Button.gameObject.SetActive(false);
+    }
+
+    private IEnumerator TypeSentence(string sentence)
+    {
+        isTyping = true;
+        dialogueText.text = "";
+        foreach (char letter in sentence.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(0.03f);
+
+            if (!isTyping) yield break;
+        }
+
+        isTyping = false;
+        ActiveChoices();
+    }
+
+    private void ActiveChoices()
+    {
+        if (!string.IsNullOrEmpty(currentLine.choice1))
+        {
+            choice1Button.gameObject.SetActive(true);
+            choice1Button.GetComponentInChildren<TMP_Text>().text = currentLine.choice1;
+            choice1Button.onClick.RemoveAllListeners();
+            choice1Button.onClick.AddListener(() =>
+            {
+                DialogueActionHandler.Execute(currentLine.choice1Action);
+                ShowLine(loader.GetDialogue(currentLine.next1));
+            });
+        }
+
+        if (!string.IsNullOrEmpty(currentLine.choice2))
+        {
+            choice2Button.gameObject.SetActive(true);
+            choice2Button.GetComponentInChildren<TMP_Text>().text = currentLine.choice2;
+            choice2Button.onClick.RemoveAllListeners();
+            choice2Button.onClick.AddListener(() =>
+            {
+                DialogueActionHandler.Execute(currentLine.choice2Action);
+                ShowLine(loader.GetDialogue(currentLine.next2));
+            });
+        }
+    }
+
+    public void EndDialogue()
+    {
+        playerHealthCanvas.enabled = true;
+        dialoguePanel.SetActive(false);
+        if (currentNPC != null)
+            currentNPC.FacePlayer(false);
+        player.ChangeState(PlayerState.Idle);
+    }
+}
