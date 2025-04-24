@@ -41,7 +41,7 @@ public class QuestManager : MonoBehaviour
     
     void LoadQuestCSV()
     {
-        TextAsset csv = Resources.Load<TextAsset>("quest");
+        TextAsset csv = Resources.Load<TextAsset>("Data/quest");
         if (csv == null)
         {
             Debug.LogError("quest.csv 파일이 없서");

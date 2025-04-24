@@ -13,7 +13,7 @@ public class DialogueLoader : MonoBehaviour
 
     void LoadCSV()
     {
-        TextAsset csv = Resources.Load<TextAsset>("dialogue");
+        TextAsset csv = Resources.Load<TextAsset>("Data/dialogue");
         if (csv == null)
         {
             Debug.LogError("CSV 파일이 없어");

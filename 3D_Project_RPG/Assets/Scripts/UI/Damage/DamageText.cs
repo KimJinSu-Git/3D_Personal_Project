@@ -7,7 +7,7 @@ using UnityEngine;
 public class DamageText : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private float floatSpeed = 1f;
+    [SerializeField] private float floatSpeed = 2f;
     [SerializeField] private float lifetime = 1f;
 
     private float timer;

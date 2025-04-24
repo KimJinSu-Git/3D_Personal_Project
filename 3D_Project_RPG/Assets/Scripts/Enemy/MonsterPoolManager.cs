@@ -24,7 +24,7 @@ public class MonsterPoolManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if(Instance == null) Instance = this;
 
         GameObject poolContainer = GameObject.Find("MonsterPoolContainer");
 

@@ -95,6 +95,8 @@ namespace Suntail
         [Header("Dialogue")]
         public DialogueUI dialogueUI;
         public bool isDialogue; // 대화중인가 ?
+
+        public bool isInventory;
         
         private float horizontalInput;
         private float verticalInput;
@@ -179,6 +181,8 @@ namespace Suntail
             states.Add(PlayerState.Die, new PlayerDie(this));
             states.Add(PlayerState.Talking, new PlayerTalkingState(this));
 
+            isInventory = false;
+            
             ChangeState(PlayerState.Idle);
         }
 
@@ -228,7 +232,7 @@ namespace Suntail
 
         private void MouseLook()
         {
-            if (isDialogue) return;
+            if (isDialogue || isInventory) return;
             
             xAxis = Input.GetAxis("Mouse X");
             yAxis = Input.GetAxis("Mouse Y");

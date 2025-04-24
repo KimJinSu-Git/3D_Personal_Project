@@ -14,7 +14,7 @@ public class ThirdPersonCamera : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 3f; // 마우스 회전 감도
     [SerializeField] private float cameraDistance = 4f; 
     [SerializeField] private float cameraHeight = 2f;  
-    [SerializeField] private float rotationSmoothTime = 0.1f; 
+    [SerializeField] private float rotationSmoothTime = 0.05f; 
     [SerializeField] private Vector2 pitchClamp = new Vector2(-30f, 60f);
     
     [SerializeField] private LayerMask collisionLayers; // 몬스터가 플레이어 주변에 왔을 때 카메라를 줌인시키는 현상을 발생시켜서 제외하기 위해 추가함.
@@ -33,7 +33,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (target == null || camPivot == null || playerController.isDialogue) return;
+        if (target == null || camPivot == null || playerController.isDialogue || playerController.isInventory) return;
         
         HandleCameraRotation();
         HandleCameraPosition();
