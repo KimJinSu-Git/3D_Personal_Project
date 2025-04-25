@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Suntail;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 
 public static class DialogueActionHandler
 {
-    public static void Execute(string action)
+    public static void Execute(string action, NPC npc = null)
     {
         if (string.IsNullOrEmpty(action)) return;
 
@@ -22,11 +23,29 @@ public static class DialogueActionHandler
             string npcName = action.Split(':')[1];
             QuestManager.Instance.CompleteQuestNotifyNpc(npcName);
         }
+        
+        if (action.StartsWith("OpenShop:"))
+        {
+            string npcName = action.Split(':')[1];
+            Debug.Log(npcName);
+            
+            if (npc != null && npc.npcName == npcName)
+            {
+                Debug.Log("OpenShopPanel 실행전");
+                ShopManager.Instance.OpenShopPanel();
+                Debug.Log("OpenShopPanel 실행후");
+            }
+            else
+            {
+                Debug.LogWarning($"'{npcName}'을 가진 npc가 없어용용가리치킨");
+            }
+        }
     }
 }
 
 public class DialogueUI : MonoBehaviour
 {
+    public static DialogueUI Instance;
     [Header("UI Elements")]
     public GameObject dialoguePanel;
     public TMP_Text nameText;
@@ -47,13 +66,18 @@ public class DialogueUI : MonoBehaviour
     public bool IsLastLine => isLastLine;
     public DialogueLine CurrentLine => currentLine;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         loader = FindObjectOfType<DialogueLoader>();
         player = FindObjectOfType<PlayerController>();
         dialoguePanel.SetActive(false);
     }
-
+    
     public void StartDialogue(string startId)
     {
         playerHealthCanvas.enabled = false;
@@ -72,6 +96,16 @@ public class DialogueUI : MonoBehaviour
         string dialogueId = currentNPC.GetDialogueId();
         
         DialogueLine line = loader.GetDialogue(dialogueId);
+        ShowLine(line);
+        player.ChangeState(PlayerState.Talking);
+    }
+
+    public void ShopEndDialogue()
+    {
+        playerHealthCanvas.enabled = false;
+        dialoguePanel.SetActive(true);
+        currentNPC.FacePlayer(true);
+        DialogueLine line = loader.GetDialogue("203");
         ShowLine(line);
         player.ChangeState(PlayerState.Talking);
     }
@@ -129,7 +163,7 @@ public class DialogueUI : MonoBehaviour
             choice1Button.onClick.RemoveAllListeners();
             choice1Button.onClick.AddListener(() =>
             {
-                DialogueActionHandler.Execute(currentLine.choice1Action);
+                DialogueActionHandler.Execute(currentLine.choice1Action, currentNPC);
                 ShowLine(loader.GetDialogue(currentLine.next1));
             });
         }
@@ -141,7 +175,7 @@ public class DialogueUI : MonoBehaviour
             choice2Button.onClick.RemoveAllListeners();
             choice2Button.onClick.AddListener(() =>
             {
-                DialogueActionHandler.Execute(currentLine.choice2Action);
+                DialogueActionHandler.Execute(currentLine.choice1Action, currentNPC);
                 ShowLine(loader.GetDialogue(currentLine.next2));
             });
         }

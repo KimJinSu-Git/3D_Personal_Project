@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using suntail;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Suntail
@@ -47,7 +48,6 @@ namespace Suntail
         public int playerLevel = 1;
         public int currentExp = 0;
         public int requiredExp = 100;
-        public int currentGold = 0;
         [SerializeField] private float expGrowthRate = 1.2f;
         [SerializeField] private int damageIncreasePerLevel = 5;
         // Player의 최대 HP
@@ -96,7 +96,7 @@ namespace Suntail
         public DialogueUI dialogueUI;
         public bool isDialogue; // 대화중인가 ?
 
-        public bool isInventory;
+        public bool isInventoryOpen;
         
         private float horizontalInput;
         private float verticalInput;
@@ -153,6 +153,7 @@ namespace Suntail
             playerShieldCollider.enabled = false;
             
             isDialogue = false;
+            isInventoryOpen = false;
         }
 
         private void OnEnable()
@@ -181,7 +182,7 @@ namespace Suntail
             states.Add(PlayerState.Die, new PlayerDie(this));
             states.Add(PlayerState.Talking, new PlayerTalkingState(this));
 
-            isInventory = false;
+            isInventoryOpen = false;
             
             ChangeState(PlayerState.Idle);
         }
@@ -232,7 +233,7 @@ namespace Suntail
 
         private void MouseLook()
         {
-            if (isDialogue || isInventory) return;
+            if (isDialogue || isInventoryOpen || ShopManager.Instance.IsOpen) return;
             
             xAxis = Input.GetAxis("Mouse X");
             yAxis = Input.GetAxis("Mouse Y");

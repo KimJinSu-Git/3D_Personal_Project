@@ -15,6 +15,9 @@ public class Enemy : MonoBehaviour
 
     [Header("EXP")] 
     public int expReward;
+    
+    [Header("Rewards")]
+    public int goldReward;
 
     [Header("Damage")] 
     public int damage;
@@ -159,6 +162,8 @@ public class Enemy : MonoBehaviour
             if (player != null)
             {
                 player.GainExp(expReward);
+                PlayerGoldManager.Instance.AddGold(goldReward);
+                Debug.Log($"골드{goldReward}G 획득");
             }
             QuestManager.Instance.ReportKill(monsterId);
             

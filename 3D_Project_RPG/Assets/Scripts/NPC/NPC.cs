@@ -3,8 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum NPCType
+{
+    Normal,
+    Quest,
+    Shop
+}
+
 public class NPC : MonoBehaviour
 {
+    public NPCType npcType;
+    
     public string npcName;
     public string startDialogueId;
     public List<string> questIDs = new List<string>(); 
@@ -18,7 +27,7 @@ public class NPC : MonoBehaviour
         originalRotation = transform.rotation;
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)  
     {
         if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.G))
         {
@@ -26,7 +35,22 @@ public class NPC : MonoBehaviour
             lookPlayer.y = 0f;
             if (lookPlayer != Vector3.zero)
                 transform.rotation = Quaternion.LookRotation(lookPlayer);
-            FindObjectOfType<DialogueUI>().StartDialogue(startDialogueId);
+
+            switch (npcType)
+            {
+                case NPCType.Normal:
+                    FindObjectOfType<DialogueUI>().StartDialogue(startDialogueId);
+                    break;
+
+                case NPCType.Quest:
+                    FindObjectOfType<DialogueUI>().StartDialogue(startDialogueId);
+                    break;
+
+                case NPCType.Shop:
+                    FindObjectOfType<DialogueUI>().StartDialogue(startDialogueId);
+                    ShopManager.Instance.gameObject.SetActive(true); 
+                    break;
+            }
         }
     }
     

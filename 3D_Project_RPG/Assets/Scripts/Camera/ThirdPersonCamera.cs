@@ -33,7 +33,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (target == null || camPivot == null || playerController.isDialogue || playerController.isInventory) return;
+        if (target == null || camPivot == null || playerController.isDialogue || playerController.isInventoryOpen || ShopManager.Instance.IsOpen) return;
         
         HandleCameraRotation();
         HandleCameraPosition();

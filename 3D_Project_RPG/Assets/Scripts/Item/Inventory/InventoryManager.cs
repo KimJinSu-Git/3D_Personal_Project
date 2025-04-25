@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Suntail;
+using TMPro;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
@@ -12,9 +13,11 @@ public class InventoryManager : MonoBehaviour
     
     public Transform slotParent;
     public GameObject slotPrefab;
+    public TMP_Text goldText;
     
-    public GameObject inventoryPanel;
-    public PlayerController playerController;
+    [SerializeField] private GameObject inventoryPanel;
+    // [SerializeField] private GameObject toolTipPanel;
+    [SerializeField] private PlayerController playerController;
 
     private void Awake()
     {
@@ -34,22 +37,26 @@ public class InventoryManager : MonoBehaviour
             if (inventoryPanel.activeSelf)
             {
                 inventoryPanel.SetActive(false);
+                TooltipUI.Instance.Hide();
+                // toolTipPanel.SetActive(false);
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                playerController.isInventory = false;
+                playerController.isInventoryOpen = false;
             }
             else
             {
                 inventoryPanel.SetActive(true);
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                playerController.isInventory = true;
+                playerController.isInventoryOpen = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
             AddItem("potion_small", 1);
         }
+        
+        goldText.text = $"Gold: {PlayerGoldManager.Instance.gold} G";
     }
 
     public void AddItem(string itemId, int amount)
@@ -62,7 +69,7 @@ public class InventoryManager : MonoBehaviour
         {
             foreach (var slot in inventorySlots)
             {
-                if (slot != null && slot.itemData.id == itemId && slot.quantity < data.maxStack)
+                if (slot != null && slot.itemData != null && slot.itemData.id == itemId && slot.quantity < data.maxStack)
                 {
                     slot.AddQuantity(amount);
                     UpdateUI();
@@ -84,6 +91,19 @@ public class InventoryManager : MonoBehaviour
 
         Debug.Log("인벤토리에 빈 슬롯이 없워");
     }
+    
+    public void SwapSlots(InventorySlotUI a, InventorySlotUI b)
+    {
+        // int indexA = a.transform.GetSiblingIndex();
+        // int indexB = b.transform.GetSiblingIndex();
+
+        int indexA = a.slotIndex;
+        int indexB = b.slotIndex;
+        
+        (inventorySlots[indexA], inventorySlots[indexB]) = (inventorySlots[indexB], inventorySlots[indexA]);
+
+        UpdateUI();
+    }
 
     public void UpdateUI()
     {
@@ -94,7 +114,10 @@ public class InventoryManager : MonoBehaviour
         {
             GameObject obj = Instantiate(slotPrefab, slotParent);
             InventorySlot slot = inventorySlots[i];
-            obj.GetComponent<InventorySlotUI>().SetSlot(slot);
+            // obj.GetComponent<InventorySlotUI>().SetSlot(slot);
+            InventorySlotUI slotUI = obj.GetComponent<InventorySlotUI>();
+            slotUI.SetSlot(slot);
+            slotUI.slotIndex = i;
         }
     }
 }

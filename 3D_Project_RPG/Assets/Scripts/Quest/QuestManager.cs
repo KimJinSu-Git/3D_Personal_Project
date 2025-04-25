@@ -14,7 +14,7 @@ public class QuestManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        Instance = this;
         
         LoadQuestCSV(); 
     }
@@ -136,15 +136,19 @@ public class QuestManager : MonoBehaviour
 
                     foreach (var item in quest.RewardItems)
                     {
-                        Debug.Log($"아이템 지급: {item}");
-                        // InventoryManager.Instance.AddItem(item);
+                        if (item.StartsWith("Gold:"))
+                        {
+                            int goldAmount = int.Parse(item.Split(':')[1]);
+                            PlayerGoldManager.Instance.AddGold(goldAmount);
+                            Debug.Log($"골드 보상 지급 ▶ {goldAmount} G");
+                        }
+                        else
+                        {
+                            Debug.Log($"아이템 지급: {item}");
+                            InventoryManager.Instance.AddItem(item, 1);
+                        }
                     }
                 }
-
-                // if (notificationUI != null)
-                // {
-                //     notificationUI.ShowNotification($"퀘스트 완료: {quest.Title} (보상 지급)");
-                // }
 
                 QuestUpdated?.Invoke();
             }

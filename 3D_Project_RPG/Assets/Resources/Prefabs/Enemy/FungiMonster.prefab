@@ -787,6 +787,7 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   expReward: 20
+  goldReward: 50
   damage: 10
   target: {fileID: 0}
   detectionRange: 10
