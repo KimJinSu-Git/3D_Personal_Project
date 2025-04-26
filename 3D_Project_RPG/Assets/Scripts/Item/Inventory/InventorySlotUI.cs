@@ -14,10 +14,16 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     private InventorySlot slot;
 
     public InventorySlot Slot => slot;
+    
+    public InventorySlot GetSlotData()
+    {
+        return slot;
+    }
 
-    public void SetSlot(InventorySlot slot)
+    public void SetSlot(InventorySlot slot, int index)
     {
         this.slot = slot;
+        this.slotIndex = index;
 
         if (slot != null && slot.itemData != null)
         {

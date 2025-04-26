@@ -38,9 +38,16 @@ public class ItemDatabase : MonoBehaviour
                 itemName = parts[1],
                 description = parts[2],
                 icon = Resources.Load<Sprite>(parts[3]),
+
                 price = int.Parse(parts[4]),
                 isDuplicate = bool.Parse(parts[5]),
-                maxStack = int.Parse(parts[6])
+                maxStack = int.Parse(parts[6]),
+    
+                itemType = Enum.Parse<ItemType>(parts[7].Trim()),
+
+                healAmount = int.Parse(parts[8]),
+                percentHealthPotion = bool.Parse(parts[9]),
+                healPercent = float.Parse(parts[10])
             };
             
             items.TryAdd(item.id, item);

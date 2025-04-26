@@ -1,4 +1,4 @@
-﻿ID,ItemName,Description,IconPath,price,isDuplicate,maxStack
-potion_small,소형 회복 포션,체력을 소량 회복한다.,Icons/potion_small,50,TRUE,99
-potion_middle,중형 회복 포션,체력을 중량 회복한다.,Icons/potion_middle,150,TRUE,99
-potion_big,대형 회복 포션,체력을 대량 회복한다.,Icons/potion_big,300,TRUE,99
+﻿ID,ItemName,Description,IconPath,price,isDuplicate,maxStack,ItemType,HealAmount,PercentHealPotion,HealPercent
+potion_small,소형 회복 포션,체력을 50 회복한다.,Icons/potion_small,50,TRUE,99,Potion,50,FALSE,0
+potion_middle,중형 회복 포션,체력을 100 회복한다.,Icons/potion_middle,100,TRUE,99,Potion,100,FALSE,0
+potion_big,대형 회복 포션,체력을 전부 회복한다.,Icons/potion_big,300,TRUE,99,Potion,0,TRUE,1

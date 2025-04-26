@@ -116,7 +116,7 @@ public class InventoryManager : MonoBehaviour
             InventorySlot slot = inventorySlots[i];
             // obj.GetComponent<InventorySlotUI>().SetSlot(slot);
             InventorySlotUI slotUI = obj.GetComponent<InventorySlotUI>();
-            slotUI.SetSlot(slot);
+            slotUI.SetSlot(slot, i);
             slotUI.slotIndex = i;
         }
     }
