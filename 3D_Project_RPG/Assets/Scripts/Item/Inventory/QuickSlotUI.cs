@@ -13,6 +13,11 @@ public class QuickSlotUI : MonoBehaviour, IDropHandler
 
     private InventorySlot linkedSlot; 
 
+    public InventorySlot GetSlotData()
+    {
+        return linkedSlot;
+    }
+    
     public void SetSlot(InventorySlot slot)
     {
         linkedSlot = slot;
