@@ -12,17 +12,6 @@ public class QuickSlotManager : MonoBehaviour
     {
         Instance = this;
     }
-    
-    private void Start()
-    {
-        // 인벤토리 매니저에서 potion_small 아이템 하나 가져와서 슬롯에 넣기
-        var potion = ItemDatabase.Instance.GetItemByID("potion_small");
-        if (potion != null)
-        {
-            InventorySlot fakeSlot = new InventorySlot(potion, 1);
-            quickSlots[0].SetSlot(fakeSlot); // 1번 슬롯에 수동 할당
-        }
-    }
 
     private void Update()
     {

@@ -41,6 +41,8 @@ namespace suntail
         // 공격
         protected void Attack()
         {
+            if (player.isInventoryOpen) return;
+            
             // 플레이어어가 무기를 들고 있고, 우클릭 버튼을 누르지 않는 상태에서, 좌클릭이 입력된다면 기본 공격 상태로 전환.
             if (Input.GetMouseButtonDown(0) && player.isHoldingWeapon && !Input.GetMouseButton(1))
             {
@@ -550,10 +552,10 @@ namespace suntail
     public class PlayerDie : PlayerBaseState
     {
         private static readonly int IsDie = Animator.StringToHash("isDie");
+        private float dieTimer = 0f;
+        private float dieDuration = 4f;
 
-        public PlayerDie(PlayerController player) : base(player)
-        {
-        }
+        public PlayerDie(PlayerController player) : base(player) {}
 
         public override void Enter()
         {
@@ -563,12 +565,28 @@ namespace suntail
 
         public override void Update()
         {
-            
+            dieTimer += Time.deltaTime;
+
+            if (dieTimer >= dieDuration)
+            {
+                Respawn();
+            }
         }
 
         public override void Exit()
         {
-            
+            player.CharacterController.enabled = true;
+        }
+        
+        private void Respawn()
+        {
+            player.playerCurrentHp = player.playerMaxHp / 2;
+            player.currentExp = Mathf.FloorToInt(player.currentExp * 0.5f);
+            player.transform.position = player.spawnPoint.position;
+
+            player.ChangeState(PlayerState.Idle);
+            Debug.Log("부활됐서용");
+            dieTimer = 0f; // 다음 부활때를 위해 다시 초기화
         }
     }
     

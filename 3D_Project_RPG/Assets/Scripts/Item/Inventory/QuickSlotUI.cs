@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Suntail;
@@ -11,7 +12,12 @@ public class QuickSlotUI : MonoBehaviour, IDropHandler
     public Image itemIcon;
     public TMP_Text quantityText;
 
-    private InventorySlot linkedSlot; 
+    private InventorySlot linkedSlot;
+
+    private void Start()
+    {
+        RefreshIcon();
+    }
 
     public InventorySlot GetSlotData()
     {
@@ -67,6 +73,7 @@ public class QuickSlotUI : MonoBehaviour, IDropHandler
         {
             itemIcon.sprite = linkedSlot.itemData.icon;
             itemIcon.enabled = true;
+            itemIcon.color = Color.red; // 아직 아이템이 포션밖에 없으니까 임시로 빨간색으로 칠해두자
             quantityText.text = linkedSlot.quantity.ToString();
             quantityText.enabled = true;
         }

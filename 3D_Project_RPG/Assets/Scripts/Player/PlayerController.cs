@@ -59,7 +59,8 @@ namespace Suntail
         // Player의 방패 데미지
         public int playerShieldDamage;
         
-        
+        [Header("Respawn")]
+        public Transform spawnPoint;
         
         [Header("Effects")]
         public Transform attackEffectSpawnPoint;

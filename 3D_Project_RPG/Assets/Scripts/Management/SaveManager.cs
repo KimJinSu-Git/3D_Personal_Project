@@ -42,6 +42,17 @@ public class SaveManager : MonoBehaviour
             data.playerCurrentHp = player.playerCurrentHp;
             data.playerMaxHp = player.playerMaxHp;
             data.playerGold = PlayerGoldManager.Instance.gold;
+            
+            data.playerPosX = player.transform.position.x;
+            data.playerPosY = player.transform.position.y;
+            data.playerPosZ = player.transform.position.z;
+        }
+        
+        // 퀘스트 저장
+        foreach (var quest in QuestManager.Instance.GetActiveQuests())
+        {
+            data.activeQuestIDs.Add(quest.ID);
+            data.activeQuestCounts.Add(quest.CurrentCount);
         }
 
         // 인벤토리 저장
@@ -92,6 +103,8 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning("저장 파일이 없기 때문에 새로운 게임으로 시작할게용");
             return;
         }
+        
+        QuestManager.Instance.GetActiveQuests().Clear();
     
         // 저장된 Json 읽어오기
         string json = File.ReadAllText(saveFilePath);
@@ -109,7 +122,23 @@ public class SaveManager : MonoBehaviour
             player.playerCurrentHp = data.playerCurrentHp;
             player.playerMaxHp = data.playerMaxHp;
             PlayerGoldManager.Instance.gold = data.playerGold;
+            
+            player.transform.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
         }
+        
+        // 퀘스트 복구
+        for (int i = 0; i < data.activeQuestIDs.Count; i++)
+        {
+            Quest quest = QuestManager.Instance.GetQuestByID(data.activeQuestIDs[i]);
+            if (quest != null)
+            {
+                quest.State = QuestState.InProgress;
+                quest.CurrentCount = data.activeQuestCounts[i];
+                QuestManager.Instance.GetActiveQuests().Add(quest);
+            }
+        }
+        
+        QuestUI.Instance?.UpdateQuest();
     
         // 인벤토리 복구
         InventoryManager inventory = InventoryManager.Instance;

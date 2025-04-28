@@ -9,6 +9,9 @@ using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Monster Info")]
+    public string monsterName;
+    
     [Header("Health")]
     public int maxHealth;
     public int currentHealth;
@@ -144,6 +147,8 @@ public class Enemy : MonoBehaviour
 
         Vector3 popupPos = transform.position + Vector3.up;
         DamageTextSpawner.Instance.SpawnDamageText(popupPos, damageAmount);
+        
+        MonsterHPUI.Instance?.ShowMonsterHP(monsterName, currentHealth, maxHealth);
 
         yield return new WaitForSeconds(0.1f);
 
@@ -159,6 +164,7 @@ public class Enemy : MonoBehaviour
             if (collider != null) collider.enabled = false;
             if (nav != null && nav.enabled) nav.enabled = false;
 
+            MonsterHPUI.Instance?.PanelHide();
             if (player != null)
             {
                 player.GainExp(expReward);

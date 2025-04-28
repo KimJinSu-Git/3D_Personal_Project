@@ -1,3 +1,3 @@
 ﻿QuestID,Title,Description,TargetType,TargetID,TargetCount,RewardXP,RewardItemIDs,QuestGiverNPC
-Q001,하얀색 달걀 퇴치,마을 주변 Egglet 5마리 퇴치,Enemy,Egglet,1,100,Gold:100;potion_small,하루
-Q002,하얀색 꼬꼬닭 퇴치,마을 주변 Chick 5마리 퇴치,Enemy,Chick,1,150,Gold:200;potion_middle,하루
+Q001,에그몽 퇴치,마을 주변 Egglet 5마리 퇴치,Enemy,Egglet,5,100,Gold:100;potion_small,하루
+Q002,젤리치킨 퇴치,마을 주변 Chick 5마리 퇴치,Enemy,Chick,5,150,Gold:200;potion_middle,하루

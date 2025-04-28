@@ -6,7 +6,6 @@ public class MonsterMinimapHandler : MonoBehaviour
 {
     [Header("미니맵 아이콘 설정")]
     [SerializeField] private GameObject iconPrefab;
-
     [SerializeField] private Transform iconParent;
 
     private MinimapIcon icon;
@@ -22,19 +21,16 @@ public class MonsterMinimapHandler : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("MinimapIcons 오브젝트를 찾을 수 없습니다.");
+                Debug.LogWarning("MinimapIcons가 없슴당");
                 return;
             }
         }
 
-        // 아이콘 생성
-        GameObject iconObj = Instantiate(iconPrefab, iconParent);
-
-        // RectTransform 가져와서 iconUI에 연결
+        GameObject iconCreate = Instantiate(iconPrefab, iconParent);
+        
         icon = GetComponent<MinimapIcon>();
-        icon.iconUI = iconObj.GetComponent<RectTransform>();
+        icon.iconUI = iconCreate.GetComponent<RectTransform>();
 
-        // 미니맵 매니저에 등록
         MinimapIconManager manager = FindObjectOfType<MinimapIconManager>();
         if (manager != null)
         {
@@ -42,7 +38,7 @@ public class MonsterMinimapHandler : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("MinimapIconManager를 찾을 수 없습니다.");
+            Debug.LogWarning("MinimapIconManager를 만들어 주셨나용?");
         }
     }
 }

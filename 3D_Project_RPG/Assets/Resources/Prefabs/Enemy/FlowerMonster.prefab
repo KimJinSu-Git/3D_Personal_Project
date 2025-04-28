@@ -2032,6 +2032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbcae4bfdc1877647b46c0d8003edee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterName: "\uB370\uC2A4\uB85C"
   maxHealth: 100
   currentHealth: 100
   expReward: 20

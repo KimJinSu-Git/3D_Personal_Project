@@ -6,9 +6,16 @@ using UnityEngine;
 
 public class QuestUI : MonoBehaviour
 {
+    public static QuestUI Instance;
+    
     [Header("UI")]
     public TMP_Text questText;
     public GameObject questPanel;
+    
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -30,7 +37,7 @@ public class QuestUI : MonoBehaviour
         }
     }
 
-    void UpdateQuest()
+    public void UpdateQuest()
     {
         List<Quest> activeQuests = QuestManager.Instance.GetActiveQuests();
         List<Quest> displayQuests = activeQuests.FindAll(q => q.State != QuestState.Completed);

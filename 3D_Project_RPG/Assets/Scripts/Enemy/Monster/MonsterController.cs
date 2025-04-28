@@ -30,14 +30,14 @@ public class MonsterController : MonoBehaviour
     [Header("Die Animation")]
     public string dieAnimation = "Die";
 
-    private int currentIdleAnimIndex = 0;
-    private int currentAttackAnimIndex = 0;
+    private int currentIdleAnimationIndex = 0;
+    private int currentAttackAnimationIndex = 0;
 
     void Awake()
     {
         if (enemyData == null)
         {
-            Debug.LogError("MonsterController가 Enemy 데이터 스크립트를 참조하지 않습니다!");
+            Debug.LogError("MonsterController에서 Error 발생 (enemyData가 없서여)");
             enabled = false;
             return;
         }
@@ -51,6 +51,7 @@ public class MonsterController : MonoBehaviour
         currentState = IdleState;
         currentState.Enter();
 
+        // enemyData의 타겟 설정을 안해 줬다면 플레이어를 찾아서 할당해놓도록 !
         if (enemyData.target == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -63,6 +64,7 @@ public class MonsterController : MonoBehaviour
 
     void Update()
     {
+        // 몬스터가 죽었다면 리턴
         if (!enemyData.isSurvive) return;
         currentState.Update();
     }
@@ -78,8 +80,8 @@ public class MonsterController : MonoBehaviour
     {
         if (idleAnimations.Length > 0)
         {
-            currentIdleAnimIndex = Random.Range(0, idleAnimations.Length);
-            return idleAnimations[currentIdleAnimIndex];
+            currentIdleAnimationIndex = Random.Range(0, idleAnimations.Length);
+            return idleAnimations[currentIdleAnimationIndex];
         }
         return null;
     }
@@ -91,8 +93,8 @@ public class MonsterController : MonoBehaviour
     {
         if (attackAnimations.Length > 0)
         {
-            currentAttackAnimIndex = Random.Range(0, attackAnimations.Length);
-            return attackAnimations[currentAttackAnimIndex];
+            currentAttackAnimationIndex = Random.Range(0, attackAnimations.Length);
+            return attackAnimations[currentAttackAnimationIndex];
         }
         return null;
     }
