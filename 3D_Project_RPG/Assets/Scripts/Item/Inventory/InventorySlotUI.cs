@@ -12,14 +12,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     public int slotIndex;
 
     private InventorySlot slot;
-
-    public InventorySlot Slot => slot;
     
-    public InventorySlot GetSlotData()
-    {
-        return slot;
-    }
-
     public void SetSlot(InventorySlot slot, int index)
     {
         this.slot = slot;
@@ -51,6 +44,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
 
         InventoryManager.Instance.UpdateUI();
+        QuickSlotManager.Instance.RefreshAllSlots();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -63,6 +57,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
                 if (ShopManager.Instance.IsOpen)
                 {
                     SellItem();
+                    // return;
                 }
             }
         }
@@ -96,21 +91,14 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        DragItemUI.Instance.EndDrag();
+        DragItemUI.Instance.EndDrag(); // 드래그 중인 아이템 이미지 꺼주고.
 
-        GameObject targetObject = eventData.pointerCurrentRaycast.gameObject;
-        Debug.Log("Raycast Target: " + targetObject?.name);
-        if (targetObject == null) return;
-
-        InventorySlotUI targetSlotUI = targetObject.GetComponentInParent<InventorySlotUI>();
-        
+        GameObject targetObject = eventData.pointerCurrentRaycast.gameObject; // 마우스가 종료된 위치에 타겟오브젝트를 찾고.
+        if (targetObject == null) return; // 타겟 오브젝트가 없다면 슬롯이 아니므로 그대로 종료.
+        InventorySlotUI targetSlotUI = targetObject.GetComponentInParent<InventorySlotUI>(); // 있다면 타겟의 부모한테서 인벤토리슬롯UI를 가져와서 담아준다.
         if (targetSlotUI != null && targetSlotUI != this)
         {
-            InventoryManager.Instance.SwapSlots(this, targetSlotUI);
-        }
-        else
-        {
-            Debug.Log("타겟 슬롯 UI를 감지하지 못했어용용죽겠지용");
+            InventoryManager.Instance.SwapSlots(this, targetSlotUI); // 기존 아이템과 마우스 포인터가 끝난 슬롯 아이템의 위치를 바꾼다.
         }
     }
 }

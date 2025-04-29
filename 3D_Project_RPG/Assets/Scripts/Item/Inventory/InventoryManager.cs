@@ -94,9 +94,6 @@ public class InventoryManager : MonoBehaviour
     
     public void SwapSlots(InventorySlotUI a, InventorySlotUI b)
     {
-        // int indexA = a.transform.GetSiblingIndex();
-        // int indexB = b.transform.GetSiblingIndex();
-
         int indexA = a.slotIndex;
         int indexB = b.slotIndex;
         
@@ -114,7 +111,6 @@ public class InventoryManager : MonoBehaviour
         {
             GameObject obj = Instantiate(slotPrefab, slotParent);
             InventorySlot slot = inventorySlots[i];
-            // obj.GetComponent<InventorySlotUI>().SetSlot(slot);
             InventorySlotUI slotUI = obj.GetComponent<InventorySlotUI>();
             slotUI.SetSlot(slot, i);
             slotUI.slotIndex = i;

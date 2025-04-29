@@ -69,10 +69,12 @@ public class NPC : MonoBehaviour
         {
             foreach (var questID in questIDs)
             {
-                Quest quest = QuestManager.Instance?.GetQuestByID(questID);
+                Quest quest = QuestManager.Instance?.GetQuestID(questID);
 
                 switch (quest.State)
                 {
+                    case QuestState.Completed:
+                        return $"Q_ReadyComplete_{questID}";
                     case QuestState.InProgress:
                         return $"Q_Progress_{questID}";
                     case QuestState.NotStarted:

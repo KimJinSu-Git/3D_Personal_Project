@@ -98,6 +98,7 @@ namespace Suntail
         public bool isDialogue; // 대화중인가 ?
 
         public bool isInventoryOpen;
+        public SettingManager settingManager;
         
         private float horizontalInput;
         private float verticalInput;
@@ -234,7 +235,7 @@ namespace Suntail
 
         private void MouseLook()
         {
-            if (isDialogue || isInventoryOpen || ShopManager.Instance.IsOpen) return;
+            if (isDialogue || isInventoryOpen || ShopManager.Instance.IsOpen || settingManager.isPanelOpen) return;
             
             xAxis = Input.GetAxis("Mouse X");
             yAxis = Input.GetAxis("Mouse Y");

@@ -219,7 +219,7 @@ public class MonsterChaseState : MonsterBaseState
         float distanceToTarget = Vector3.Distance(monster.transform.position, monster.target.position);
 
         // 타겟과의 거리가 공격 가능 거리 이내라면 Attack 상태로 전환하고 이동을 멈춤
-        if (distanceToTarget <= monster.nav.stoppingDistance + 1f) // 공격 가능 거리
+        if (distanceToTarget <= 2.0f) // 공격 가능 거리
         {
             monster.nav.isStopped = true; // 이동 멈춤
             controller.ChangeState(controller.AttackState);
@@ -288,7 +288,7 @@ public class MonsterAttackState : MonsterBaseState
         }
         animatorStateInfo = monster.animation.GetCurrentAnimatorStateInfo(0);
         // 타겟이 없거나, 타겟과의 거리가 공격 불가능 거리보다 멀어지면 Chase 상태로 전환
-        if (monster.target == null || Vector3.Distance(monster.transform.position, monster.target.position) > monster.nav.stoppingDistance + 2f)
+        if (monster.target == null || Vector3.Distance(monster.transform.position, monster.target.position) > 4.0f)
         {
             controller.ChangeState(controller.ChaseState);
             return;
@@ -313,7 +313,14 @@ public class MonsterAttackState : MonsterBaseState
         }
 
         // 공격 중이 아닐 때는 Idle 상태
-        PlayAnimation("Idle");
+        if (animatorStateInfo.IsName("Idle"))
+        {
+            return;
+        }
+        else
+        {
+            PlayAnimation("Idle");
+        }
 
         // 공격 쿨타임 체크시간 증가
         attackTimer += Time.deltaTime;
@@ -343,7 +350,16 @@ public class MonsterAttackState : MonsterBaseState
             PlayerController player = monster.target.GetComponent<PlayerController>();
             if (player != null && player.playerCurrentHp > 0)
             {
-                player.playerCurrentHp -= monster.damage;
+                if (player.currentState == PlayerState.ShieldWait || player.currentState == PlayerState.ShieldWalk || player.currentState == PlayerState.ShieldRun || player.currentState == PlayerState.ShieldAttack)
+                {
+                    player.playerCurrentHp -= monster.damage/2;
+                }
+                else
+                {
+                    player.playerCurrentHp -= monster.damage;
+                }
+
+            
                 Debug.Log($"몬스터가 플레이어에게 {monster.damage} 데미지를 입혔습니다. 현재 플레이어 HP: {player.playerCurrentHp}");
 
                 if (player.playerCurrentHp <= 0)

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Suntail;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
@@ -13,11 +15,17 @@ public class SettingManager : MonoBehaviour
     public Button resumeButton;
     public Button quitButton;
 
-    private bool isPanelOpen = false;
+    public bool isPanelOpen = false;
     [SerializeField]private PlayerController player;
+    [SerializeField] private Canvas playerCanvas;
 
     private void Start()
     {
+        playerCanvas.enabled = true;
+        isPanelOpen = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        Debug.Log("Setting Manager Start");
         if (PlayerPrefs.HasKey("MasterVolume"))
         {
             float savedVolume = PlayerPrefs.GetFloat("MasterVolume");
@@ -25,16 +33,19 @@ public class SettingManager : MonoBehaviour
             SetVolume(savedVolume);
         }
 
+        Debug.Log("SetVolume AddListener");
         volumeSlider.onValueChanged.AddListener(SetVolume);
 
+        Debug.Log("ResumeGame AddListener");
         resumeButton.onClick.AddListener(ResumeGame);
+        Debug.Log("QuitGame AddListener");
         quitButton.onClick.AddListener(QuitGame);
 
-        // 처음에는 설정 패널 비활성화
+        Debug.Log("SetActive False");
         settingPanel.SetActive(false);
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (player.isDialogue || player.isInventoryOpen || ShopManager.Instance.IsOpen) return;
         
@@ -42,20 +53,23 @@ public class SettingManager : MonoBehaviour
         {
             if (isPanelOpen)
             {
-                settingPanel.SetActive(false);
+                Debug.Log("isPanelClose");
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                settingPanel.SetActive(false);
                 isPanelOpen = false;
             }
             else
             {
-                settingPanel.SetActive(true);
+                Debug.Log("isPanelOpen");
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                settingPanel.SetActive(true);
                 isPanelOpen = true;
             }
         }
     }
+    
 
     public void SetVolume(float volume)
     {
@@ -66,9 +80,10 @@ public class SettingManager : MonoBehaviour
 
     private void ResumeGame()
     {
-        settingPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        settingPanel.SetActive(false);
+        isPanelOpen = false;
     }
 
     public void QuitGame()

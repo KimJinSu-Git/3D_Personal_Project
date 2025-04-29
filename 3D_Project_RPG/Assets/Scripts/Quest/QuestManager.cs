@@ -24,7 +24,7 @@ public class QuestManager : MonoBehaviour
         return activeQuests;
     }
     
-    public Quest GetQuestByID(string questID)
+    public Quest GetQuestID(string questID)
     {
         return allQuests.TryGetValue(questID, out var quest) ? quest : null;
     }
@@ -120,7 +120,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    public void CompleteQuestNotifyNpc(string npcName)
+    public void CompleteQuestNpc(string npcName)
     {
         foreach (var quest in activeQuests)
         {
@@ -146,6 +146,7 @@ public class QuestManager : MonoBehaviour
                         {
                             Debug.Log($"아이템 지급: {item}");
                             InventoryManager.Instance.AddItem(item, 1);
+                            QuickSlotManager.Instance.RefreshAllSlots();
                         }
                     }
                 }

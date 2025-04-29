@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuestUI : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class QuestUI : MonoBehaviour
     [Header("UI")]
     public TMP_Text questText;
     public GameObject questPanel;
+    [SerializeField] private Image image;
     
     private void Awake()
     {
@@ -41,8 +43,9 @@ public class QuestUI : MonoBehaviour
     {
         List<Quest> activeQuests = QuestManager.Instance.GetActiveQuests();
         List<Quest> displayQuests = activeQuests.FindAll(q => q.State != QuestState.Completed);
+        List<Quest> progressQuests = activeQuests.FindAll(q => q.State is QuestState.InProgress or QuestState.ReadyComplete);
         
-        if (activeQuests.Count == 0)
+        if (progressQuests.Count == 0)
         {
             questPanel.SetActive(false);
             return;
@@ -53,10 +56,17 @@ public class QuestUI : MonoBehaviour
         string display = "";
         foreach (var quest in displayQuests)
         {
-            string line = $"▶ {quest.Title} {quest.CurrentCount} / {quest.TargetCount}";
+            string line = null;
+            if (quest.State == QuestState.InProgress)
+            {
+                image.sprite = Resources.Load<Sprite>("Icons/checkbox_unchecked");
+                line = $"       {quest.Title} {quest.CurrentCount} / {quest.TargetCount}";
+            }
+            
             if (quest.State == QuestState.ReadyComplete)
             {
-                line += " (보고 필요)";
+                image.sprite = Resources.Load<Sprite>("Icons/checkbox_checked");
+                line = $"       {quest.Title} {quest.CurrentCount} / {quest.TargetCount}";
             }
             display += line + "\n";
         }

@@ -14,7 +14,7 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        saveFilePath = Path.Combine(Application.persistentDataPath, "save.json");
+        saveFilePath = Path.Combine(Application.persistentDataPath, "playerSave.json");
         // C:/사용자/사용자이름/AppData/LocalLow/회사이름/게임이름/save.json  <= 평균적인 경로 위치
     }
 
@@ -51,8 +51,11 @@ public class SaveManager : MonoBehaviour
         // 퀘스트 저장
         foreach (var quest in QuestManager.Instance.GetActiveQuests())
         {
-            data.activeQuestIDs.Add(quest.ID);
-            data.activeQuestCounts.Add(quest.CurrentCount);
+            if (quest.State == QuestState.InProgress)
+            {
+                data.activeQuestIDs.Add(quest.ID);
+                data.activeQuestCounts.Add(quest.CurrentCount);
+            }
         }
 
         // 인벤토리 저장
@@ -129,8 +132,8 @@ public class SaveManager : MonoBehaviour
         // 퀘스트 복구
         for (int i = 0; i < data.activeQuestIDs.Count; i++)
         {
-            Quest quest = QuestManager.Instance.GetQuestByID(data.activeQuestIDs[i]);
-            if (quest != null)
+            Quest quest = QuestManager.Instance.GetQuestID(data.activeQuestIDs[i]);
+            if (quest != null && quest.State != QuestState.Completed)
             {
                 quest.State = QuestState.InProgress;
                 quest.CurrentCount = data.activeQuestCounts[i];

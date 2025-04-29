@@ -41,7 +41,7 @@ namespace suntail
         // 공격
         protected void Attack()
         {
-            if (player.isInventoryOpen) return;
+            if (player.isInventoryOpen || player.settingManager.isPanelOpen) return;
             
             // 플레이어어가 무기를 들고 있고, 우클릭 버튼을 누르지 않는 상태에서, 좌클릭이 입력된다면 기본 공격 상태로 전환.
             if (Input.GetMouseButtonDown(0) && player.isHoldingWeapon && !Input.GetMouseButton(1))

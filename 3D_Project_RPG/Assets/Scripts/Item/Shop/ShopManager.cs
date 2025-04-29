@@ -23,7 +23,7 @@ public class ShopManager : MonoBehaviour
         Instance = this;
 
         shopPanel.SetActive(false);
-        LoadShopItemsFromCsv();
+        LoadShopCsv();
     }
 
     private void LateUpdate()
@@ -34,7 +34,7 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    private void LoadShopItemsFromCsv()
+    private void LoadShopCsv()
     {
         TextAsset csvFile = Resources.Load<TextAsset>("Data/shop_items");
         if (csvFile == null)
@@ -88,6 +88,7 @@ public class ShopManager : MonoBehaviour
         }
         
         InventoryManager.Instance.AddItem(item.id, 1);
+        QuickSlotManager.Instance.RefreshAllSlots();
         Debug.Log($"{item.itemName} 구매!");
     }
 

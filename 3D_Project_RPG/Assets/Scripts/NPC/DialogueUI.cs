@@ -21,7 +21,7 @@ public static class DialogueActionHandler
         if (action.StartsWith("CompleteQuest:"))
         {
             string npcName = action.Split(':')[1];
-            QuestManager.Instance.CompleteQuestNotifyNpc(npcName);
+            QuestManager.Instance.CompleteQuestNpc(npcName);
         }
         
         if (action.StartsWith("OpenShop:"))
@@ -75,6 +75,7 @@ public class DialogueUI : MonoBehaviour
     {
         loader = FindObjectOfType<DialogueLoader>();
         player = FindObjectOfType<PlayerController>();
+        playerHealthCanvas.enabled = true;
         dialoguePanel.SetActive(false);
     }
     
@@ -91,7 +92,7 @@ public class DialogueUI : MonoBehaviour
         }
         
         currentNPC.FacePlayer(true);
-        QuestManager.Instance.CompleteQuestNotifyNpc(currentNPC.npcName); 
+        QuestManager.Instance.CompleteQuestNpc(currentNPC.npcName); 
         
         string dialogueId = currentNPC.GetDialogueId();
         
@@ -175,7 +176,7 @@ public class DialogueUI : MonoBehaviour
             choice2Button.onClick.RemoveAllListeners();
             choice2Button.onClick.AddListener(() =>
             {
-                DialogueActionHandler.Execute(currentLine.choice1Action, currentNPC);
+                DialogueActionHandler.Execute(currentLine.choice2Action, currentNPC);
                 ShowLine(loader.GetDialogue(currentLine.next2));
             });
         }
