@@ -20,16 +20,18 @@ public class NPC : MonoBehaviour
 
     private Animator animator;
     private Quaternion originalRotation;
+    private bool isInteracting;
     
     private void Start()
     {
+        isInteracting = false;
         animator = GetComponentInChildren<Animator>();
         originalRotation = transform.rotation;
     }
 
     private void OnTriggerStay(Collider other)  
     {
-        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.G))
+        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.G) && DialogueUI.Instance.dialoguePanel.activeSelf == false)
         {
             Vector3 lookPlayer = other.transform.position - transform.position;
             lookPlayer.y = 0f;
@@ -70,16 +72,28 @@ public class NPC : MonoBehaviour
             foreach (var questID in questIDs)
             {
                 Quest quest = QuestManager.Instance?.GetQuestID(questID);
+                if (quest == null) continue;
 
-                switch (quest.State)
-                {
-                    case QuestState.Completed:
-                        return $"Q_ReadyComplete_{questID}";
-                    case QuestState.InProgress:
-                        return $"Q_Progress_{questID}";
-                    case QuestState.NotStarted:
-                        return $"Q_Start_{questID}";
-                }
+                if (quest.State == QuestState.ReadyComplete)
+                    return $"Q_ReadyComplete_{questID}";
+            }
+
+            foreach (var questID in questIDs)
+            {
+                Quest quest = QuestManager.Instance?.GetQuestID(questID);
+                if (quest == null) continue;
+
+                if (quest.State == QuestState.NotStarted)
+                    return $"Q_Start_{questID}";
+            }
+
+            foreach (var questID in questIDs)
+            {
+                Quest quest = QuestManager.Instance?.GetQuestID(questID);
+                if (quest == null) continue;
+
+                if (quest.State == QuestState.InProgress)
+                    return $"Q_Progress_{questID}";
             }
         }
         

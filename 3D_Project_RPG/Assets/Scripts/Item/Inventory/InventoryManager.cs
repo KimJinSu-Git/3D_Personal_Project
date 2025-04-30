@@ -32,7 +32,7 @@ public class InventoryManager : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && DialogueUI.Instance.dialoguePanel.activeSelf == false && ShopManager.Instance.IsOpen == false)
         {
             if (inventoryPanel.activeSelf)
             {

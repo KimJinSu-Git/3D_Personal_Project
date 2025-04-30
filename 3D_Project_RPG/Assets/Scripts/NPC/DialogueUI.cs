@@ -54,13 +54,17 @@ public class DialogueUI : MonoBehaviour
     public Button choice2Button;
     [SerializeField] private Canvas playerHealthCanvas;
 
+    public NPC currentNPC;
+    
     private DialogueLoader loader;
     private DialogueLine currentLine;
     private PlayerController player;
 
     private bool isTyping = false;
     private bool isLastLine = false;
-    private NPC currentNPC;
+    
+    private Coroutine typingCoroutine;
+    
 
     public bool IsTyping => isTyping;
     public bool IsLastLine => isLastLine;
@@ -70,7 +74,7 @@ public class DialogueUI : MonoBehaviour
     {
         Instance = this;
     }
-
+    
     private void Start()
     {
         loader = FindObjectOfType<DialogueLoader>();
@@ -92,13 +96,14 @@ public class DialogueUI : MonoBehaviour
         }
         
         currentNPC.FacePlayer(true);
-        QuestManager.Instance.CompleteQuestNpc(currentNPC.npcName); 
         
         string dialogueId = currentNPC.GetDialogueId();
         
         DialogueLine line = loader.GetDialogue(dialogueId);
         ShowLine(line);
         player.ChangeState(PlayerState.Talking);
+        
+        QuestManager.Instance.CompleteQuestNpc(currentNPC.npcName); 
     }
 
     public void ShopEndDialogue()
@@ -109,11 +114,33 @@ public class DialogueUI : MonoBehaviour
         DialogueLine line = loader.GetDialogue("203");
         ShowLine(line);
         player.ChangeState(PlayerState.Talking);
+
+        StartCoroutine(StoreNPCRotation());
+    }
+    
+    private IEnumerator StoreNPCRotation()
+    {
+        while (IsTyping)
+            yield return null;
+
+        if (IsLastLine)
+        {
+            yield return new WaitUntil(() => dialoguePanel.activeSelf == false);
+        }
+        // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Mouse0));
+        
+        if (currentNPC != null)
+            currentNPC.FacePlayer(false);
     }
 
     public void SkipTyping()
     {
-        StopAllCoroutines();
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        
         dialogueText.text = currentLine.text;
         isTyping = false;
 
@@ -127,8 +154,13 @@ public class DialogueUI : MonoBehaviour
         currentLine = line;
 
         nameText.text = line.npcName;
-        StopAllCoroutines();
-        StartCoroutine(TypeSentence(line.text));
+
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+        }
+        
+        typingCoroutine = StartCoroutine(TypeSentence(line.text));
 
         bool hasChoice1 = !string.IsNullOrEmpty(line.choice1);
         bool hasChoice2 = !string.IsNullOrEmpty(line.choice2);
@@ -186,8 +218,9 @@ public class DialogueUI : MonoBehaviour
     {
         playerHealthCanvas.enabled = true;
         dialoguePanel.SetActive(false);
-        if (currentNPC != null)
+        if (currentNPC != null && currentNPC.npcType != NPCType.Shop)
             currentNPC.FacePlayer(false);
+        
         player.ChangeState(PlayerState.Idle);
     }
 }

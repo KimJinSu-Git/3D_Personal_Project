@@ -18,6 +18,7 @@ public class ShopSlotUI : MonoBehaviour
         itemData = data;
 
         icon.sprite = data.icon;
+        icon.color = Color.red; // 임시 색깔
         nameText.text = data.itemName;
         priceText.text = $"{data.price} G";
 

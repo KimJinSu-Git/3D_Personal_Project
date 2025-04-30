@@ -99,6 +99,7 @@ namespace Suntail
 
         public bool isInventoryOpen;
         public SettingManager settingManager;
+        public bool runBeforeJump = false;
         
         private float horizontalInput;
         private float verticalInput;
@@ -201,6 +202,8 @@ namespace Suntail
 
         private void Update()
         {
+            if (ShopManager.Instance.IsOpen) return;
+            
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput = Input.GetAxisRaw("Vertical");
             isRunning = Input.GetKey(runKey);
@@ -235,7 +238,7 @@ namespace Suntail
 
         private void MouseLook()
         {
-            if (isDialogue || isInventoryOpen || ShopManager.Instance.IsOpen || settingManager.isPanelOpen) return;
+            if (isDialogue || isInventoryOpen || settingManager.isPanelOpen) return;
             
             xAxis = Input.GetAxis("Mouse X");
             yAxis = Input.GetAxis("Mouse Y");

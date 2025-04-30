@@ -27,7 +27,8 @@ public class TooltipUI : MonoBehaviour
     {
         itemNameText.text = data.itemName;
         descriptionText.text = data.description;
-        priceText.text = $"{data.price}";
+        priceText.text = $"{data.price} Gold";
+        priceText.color = Color.yellow;
 
         transform.position = pos;
 

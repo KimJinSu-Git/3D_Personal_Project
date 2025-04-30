@@ -21,6 +21,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         if (slot != null && slot.itemData != null)
         {
             icon.sprite = slot.itemData.icon;
+            icon.color = Color.red; // 임시 색깔
             icon.enabled = true;
             quantityText.text = slot.quantity.ToString();
         }

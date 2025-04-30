@@ -88,11 +88,13 @@ public class MonsterPatrolState : MonsterBaseState
 {
     // 순찰 목표 위치
     private Vector3 targetPosition;
+    private float patrolTime;
 
     public MonsterPatrolState(MonsterController controller, Enemy monster) : base(controller, monster) { }
 
     public override void Enter()
     {
+        patrolTime = 0f;
         // NavMeshAgent 이동 정지 해제
         monster.nav.isStopped = false;
         // 마지막 순찰 시간 갱신
@@ -123,11 +125,23 @@ public class MonsterPatrolState : MonsterBaseState
         // NavMeshAgent의 순찰이 끝났다면 새로운 순찰 위치 재설정
         if (monster.nav.remainingDistance <= monster.nav.stoppingDistance)
         {
-            SetNewPatrolDestination();
+            patrolTime += Time.deltaTime;
 
-            if (!string.IsNullOrEmpty(controller.walkAnimation))
+            if (patrolTime <= 2f && patrolTime >= 0.5f)
             {
-                PlayAnimation(controller.walkAnimation);
+                PlayAnimation(controller.idleAnimations[0]);
+            }
+            
+            if (patrolTime >= 2f)
+            {
+                SetNewPatrolDestination();
+                
+                if (!string.IsNullOrEmpty(controller.walkAnimation))
+                {
+                    PlayAnimation(controller.walkAnimation);
+                }
+
+                patrolTime = 0f;
             }
         }
     }
@@ -315,7 +329,6 @@ public class MonsterAttackState : MonsterBaseState
         // 공격 중이 아닐 때는 Idle 상태
         if (animatorStateInfo.IsName("Idle"))
         {
-            return;
         }
         else
         {

@@ -25,7 +25,7 @@ public class ShopManager : MonoBehaviour
         shopPanel.SetActive(false);
         LoadShopCsv();
     }
-
+    
     private void LateUpdate()
     {
         if (IsOpen && Input.GetKeyDown(KeyCode.Escape))

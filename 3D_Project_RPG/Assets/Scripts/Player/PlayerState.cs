@@ -92,7 +92,7 @@ namespace suntail
 
         private void WeaponSwap()
         {
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.Q))
             {
                 player.playerAnimator.Play(player.isHoldingWeapon ? "Sheathe" : "UnSheathe");
                 player.isHoldingWeapon = !player.isHoldingWeapon;
@@ -118,6 +118,7 @@ namespace suntail
             
             if (Input.GetKeyDown(player.JumpKey) && player.IsGrounded)
             {
+                player.runBeforeJump = false;
                 player.ChangeState(PlayerState.Jump);
                 return;
             }
@@ -161,6 +162,7 @@ namespace suntail
             
             if (Input.GetKeyDown(player.JumpKey) && player.IsGrounded)
             {
+                player.runBeforeJump = true;
                 player.ChangeState(PlayerState.Jump);
                 return;
             }
@@ -205,7 +207,14 @@ namespace suntail
         public override void Update()
         {
             verticalVelocity += player.Gravity * Time.deltaTime;
-            Vector3 moveDirection = (player.transform.forward * player.VerticalInput + player.transform.right * player.HorizontalInput) * (player.WalkSpeed * Time.deltaTime);
+
+            float moveSpeed = player.WalkSpeed;
+            if (player.runBeforeJump)
+            {
+                moveSpeed *= player.RunMultiplier;
+            }
+            
+            Vector3 moveDirection = (player.transform.forward * player.VerticalInput + player.transform.right * player.HorizontalInput) * (moveSpeed * Time.deltaTime);
             moveDirection.y = verticalVelocity * Time.deltaTime;
             
             player.CharacterController.Move(moveDirection);
@@ -219,7 +228,10 @@ namespace suntail
             // player.CharacterController.Move(moveDirection);
         }
 
-        public override void Exit() { }
+        public override void Exit()
+        {
+            player.runBeforeJump = false;
+        }
     }
 
     // 기본 공격 콤보
