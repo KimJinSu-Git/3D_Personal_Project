@@ -1,2 +1,5 @@
-# 3D_Personal_Project
-RPG Descript
+# ⚔️ Unity RPG 프로젝트
+🛠 개발 도구: Unity(C#) <br/>
+📆 개발 기간: 24.xx.xx ~ 24.xx.xx (약 X주) <br/>
+Unity 기반으로 RPG의 기본 시스템을 직접 구현하며 기초를 다진 개인 프로젝트입니다. <br/>
+캐릭터의 상태 전환, NPC 대화, 퀘스트 진행, 상점 시스템 등을 포함하여 RPG 장르의 핵심 기능을 학습하고 구현했습니다. <br/>
