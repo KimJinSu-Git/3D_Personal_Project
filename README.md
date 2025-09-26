@@ -7,22 +7,22 @@ Unity 기반으로 RPG의 기본 시스템을 직접 구현하며 기초를 다�
 ___
 🔑 주요 구현 요소
 * **FSM 기반 Player·Monster 전투 시스템**
-* **인벤토리 시스템** 👉 [InventoryManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Item/Inventory/InventoryManager.cs)
+* **인벤토리 시스템**
   * List 기반의 20칸짜리 인벤토리 슬롯 구현 
-  * 아이템을 드래그해서 다른 슬롯으로 이동
+  * 아이템을 드래그해서 다른 슬롯으로 이동 👉 [InventoryManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Item/Inventory/InventoryManager.cs#L95)
 * **퀵슬롯 시스템** 👉 [QuickSlotManager](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Item/Inventory/QuickSlotManager.cs)
   * 인벤토리에서 드래그를 통해 큇슬롯 등록
   * 해당 키 입력을 통해 아이템 사용
 * **상점 시스템**
   * 가진 Gold를 소모하여 포션 구매
-  * 아이템 구매 시 인벤토리를 체크하여 중복된 아이템이 존재하는 지 확인 👉 [InventoryManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Item/Inventory/InventoryManager.cs) => AddItem()
+  * 아이템 구매 시 인벤토리를 체크하여 중복된 아이템이 존재하는 지 확인 👉 [InventoryManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Item/Inventory/InventoryManager.cs#L62)
   * 인벤토리에서 아이템을 우클릭하여 아이템 판매
 * **NPC 대화 시스템**
   * G 키를 통해 NPC와 대화
   * dialogue ID를 통해 CSV에서 NPC의 대사를 호출
 * **퀘스트 시스템**
   * 퀘스트 NPC와 대화를 통해 퀘스트 연계
-  * Event 호출을 통한 퀘스트 진행 현황 동기화 👉 [QuestManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Quest/QuestManager.cs)
+  * Event 호출을 통한 퀘스트 진행 현황 동기화 👉 [QuestManager.cs](https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Scripts/Quest/QuestManager.cs#L13)
 * **Json, CSV 기반 저장 및 로드**
 ___
 * **영상 바로가기** [RPG.avi](https://drive.google.com/file/d/1ft5Vmcbp2HLU-rUg7bm2hKi7oNjKIkEu/view?usp=drive_link)
