@@ -7,8 +7,8 @@ Unity 기반으로 RPG의 기본 시스템을 직접 구현하며 기초를 다�
 ___
 📸 **인게임 이미지**
 <p align="center">
-  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image1.PNG" width="400"/>
-  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image2.PNG" width="400"/>
+  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image1.PNG" width="390"/> &nbsp; &nbsp;
+  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image2.PNG" width="390"/>
 </p>
 
 ___
