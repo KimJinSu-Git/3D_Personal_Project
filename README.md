@@ -5,6 +5,13 @@ ___
 Unity 기반으로 RPG의 기본 시스템을 직접 구현하며 기초를 다진 개인 프로젝트입니다. <br/>
 캐릭터의 상태 전환, NPC 대화, 퀘스트 진행, 상점 시스템 등을 포함하여 RPG 장르의 핵심 기능을 학습하고 구현했습니다. <br/>
 ___
+📸 **인게임 이미지**
+<p align="center">
+  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image1.PNG" width="500"/>
+  <img src="https://github.com/KimJinSu-Git/3D_Personal_Project/blob/main/3D_Project_RPG/Assets/Screenshots/Image2.PNG" width="500"/>
+</p>
+
+___
 🔑 주요 구현 요소
 * **FSM 기반 Player·Monster 전투 시스템**
 * **인벤토리 시스템**
